@@ -47,23 +47,32 @@ typedef NS_ENUM(NSInteger, BZGFormFieldState) {
     CGFloat _leftIndicatorActiveAspectRatio;
     CGFloat _leftTextPadding;
 
-    // should I derive these states? yes.
     CGFloat _currentLeftIndicatorAspectRatio;
     BZGLeftIndicatorState _currentLeftIndicatorState;
+
+    BZGTextValidationBlock _textValidationBlock;
 }
 
 #pragma mark - Public
 
-- (void)setLeftIndicatorInactiveAspectRatio:(CGFloat)aspectRatio {
+- (void)setLeftIndicatorInactiveAspectRatio:(CGFloat)aspectRatio
+{
     _leftIndicatorInactiveAspectRatio = aspectRatio;
 }
 
-- (void)setLeftIndicatorActiveAspectRatio:(CGFloat)aspectRatio {
+- (void)setLeftIndicatorActiveAspectRatio:(CGFloat)aspectRatio
+{
     _leftIndicatorActiveAspectRatio = aspectRatio;
 }
 
-- (void)setLeftTextPadding:(CGFloat)leftTextPadding {
+- (void)setLeftTextPadding:(CGFloat)leftTextPadding
+{
     _leftTextPadding = leftTextPadding;
+}
+
+- (void)setTextValidationBlock:(BZGTextValidationBlock)block
+{
+    _textValidationBlock = block;
 }
 
 - (id)initWithFrame:(CGRect)frame
@@ -93,7 +102,7 @@ typedef NS_ENUM(NSInteger, BZGFormFieldState) {
     _currentLeftIndicatorAspectRatio = _leftIndicatorInactiveAspectRatio;
     _leftTextPadding = DEFAULT_LEFT_TEXT_PADDING;
 
-    self.invalidColor = DEFAULT_NONE_COLOR;
+    self.noneColor = DEFAULT_NONE_COLOR;
     self.validColor = DEFAULT_VALID_COLOR;
     self.invalidColor = DEFAULT_INVALID_COLOR;
 
@@ -109,7 +118,12 @@ typedef NS_ENUM(NSInteger, BZGFormFieldState) {
 
     self.leftIndicator = [UIButton buttonWithType:UIButtonTypeCustom];
     self.leftIndicator.titleLabel.textColor = [UIColor whiteColor];
-    [self.leftIndicator addTarget:self action:@selector(leftIndicatorTouch) forControlEvents:UIControlEventTouchUpInside];
+    [self.leftIndicator addTarget:self
+                           action:@selector(leftIndicatorTouchDown)
+                 forControlEvents:UIControlEventTouchDown];
+    [self.leftIndicator addTarget:self
+                           action:@selector(leftIndicatorTouchUp)
+                 forControlEvents:UIControlEventTouchUpInside | UIControlEventTouchUpOutside];
     [self addSubview:self.leftIndicator];
     [self updateWithLeftIndicatorState:BZGLeftIndicatorStateInactive
                         formFieldState:BZGFormFieldStateNone animated:NO];
@@ -189,6 +203,46 @@ typedef NS_ENUM(NSInteger, BZGFormFieldState) {
 
 #pragma mark - UITextFieldDelegate
 
+- (BOOL)textFieldShouldBeginEditing:(UITextField *)textField
+{
+    if ([self.delegate respondsToSelector:@selector(textFieldShouldBeginEditing:)]) {
+        return [self.delegate textFieldShouldBeginEditing:textField];
+    } else {
+        return YES;
+    }
+}
+
+- (void)textFieldDidBeginEditing:(UITextField *)textField
+{
+    if ([self.delegate respondsToSelector:@selector(textFieldDidBeginEditing:)]) {
+        [self.delegate textFieldDidBeginEditing:textField];
+    }
+}
+
+- (BOOL)textFieldShouldEndEditing:(UITextField *)textField
+{
+    if ([self.delegate respondsToSelector:@selector(textFieldShouldEndEditing:)]) {
+        return [self.delegate textFieldShouldEndEditing:textField];
+    } else {
+        return YES;
+    }
+}
+
+- (void)textFieldDidEndEditing:(UITextField *)textField
+{
+    if (textField.text.length == 0) {
+        [self updateWithLeftIndicatorState:BZGLeftIndicatorStateInactive formFieldState:BZGFormFieldStateNone animated:NO];
+    } else if (textField.text.length <= 5) {
+        [self updateWithLeftIndicatorState:BZGLeftIndicatorStateActive formFieldState:BZGFormFieldStateInvalid animated:YES];
+    } else {
+        [self updateWithLeftIndicatorState:BZGLeftIndicatorStateInactive formFieldState:BZGFormFieldStateValid animated:NO];
+    }
+
+    if ([self.delegate respondsToSelector:@selector(textFieldDidEndEditing:)]) {
+        [self.delegate textFieldDidEndEditing:textField];
+    }
+}
+
 - (BOOL)textField:(UITextField *)textField
 shouldChangeCharactersInRange:(NSRange)range
 replacementString:(NSString *)string
@@ -198,20 +252,53 @@ replacementString:(NSString *)string
     } else {
         [self updateWithLeftIndicatorState:BZGLeftIndicatorStateInactive formFieldState:BZGFormFieldStateInvalid animated:NO];
     }
-    return YES;
-}
 
-- (void)textFieldDidEndEditing:(UITextField *)textField
-{
-    if (textField.text.length <= 5) {
-        [self updateWithLeftIndicatorState:BZGLeftIndicatorStateActive formFieldState:BZGFormFieldStateInvalid animated:YES];
+    if ([self.delegate respondsToSelector:@selector(textField:shouldChangeCharactersInRange:replacementString:)]) {
+        return [self.delegate textField:textField
+          shouldChangeCharactersInRange:range
+                      replacementString:string];
+    } else {
+        return YES;
     }
 }
 
+- (BOOL)textFieldShouldClear:(UITextField *)textField
+{
+    if ([self.delegate respondsToSelector:@selector(textFieldShouldClear:)]) {
+        return [self.delegate textFieldShouldClear:textField];
+    } else {
+        return YES;
+    }
+}
+
+- (BOOL)textFieldShouldReturn:(UITextField *)textField
+{
+    #warning testing only
+    [textField resignFirstResponder];
+    return YES;
+
+    if ([self.delegate respondsToSelector:@selector(textFieldShouldReturn:)]) {
+        return [self.delegate textFieldShouldReturn:textField];
+    } else {
+        return YES;
+    }
+}
+
+
+
 #pragma mark - Actions
 
-- (void)leftIndicatorTouch
+- (void)leftIndicatorTouchDown
 {
+    UIColor *color = [self.leftIndicator.backgroundColor colorWithAlphaComponent:0.8];
+    self.leftIndicator.backgroundColor = color;
+}
+
+- (void)leftIndicatorTouchUp
+{
+    UIColor *color = [self.leftIndicator.backgroundColor colorWithAlphaComponent:1.0];
+    self.leftIndicator.backgroundColor = color;
+
     UIAlertView *alertView = [[UIAlertView alloc] initWithTitle:@"alert view"
                                                         message:@"woop"
                                                        delegate:self
@@ -221,12 +308,6 @@ replacementString:(NSString *)string
 }
 
 
-#warning testing only
-- (BOOL)textFieldShouldReturn:(UITextField *)textField
-{
-    [textField resignFirstResponder];
-    return YES;
-}
 
 
 @end
