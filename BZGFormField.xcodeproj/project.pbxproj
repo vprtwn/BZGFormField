@@ -21,6 +21,7 @@
 		EBEF6BDB17E40BFC00FD9D4D /* UIKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = EBEF6BBD17E40BFC00FD9D4D /* UIKit.framework */; };
 		EBEF6BE317E40BFC00FD9D4D /* InfoPlist.strings in Resources */ = {isa = PBXBuildFile; fileRef = EBEF6BE117E40BFC00FD9D4D /* InfoPlist.strings */; };
 		EBEF6BE517E40BFC00FD9D4D /* BZGFormFieldTests.m in Sources */ = {isa = PBXBuildFile; fileRef = EBEF6BE417E40BFC00FD9D4D /* BZGFormFieldTests.m */; };
+		EBEF6BF317E4197900FD9D4D /* BZGFormField.m in Sources */ = {isa = PBXBuildFile; fileRef = EBEF6BF217E4197900FD9D4D /* BZGFormField.m */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -53,6 +54,8 @@
 		EBEF6BE017E40BFC00FD9D4D /* BZGFormFieldTests-Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = "BZGFormFieldTests-Info.plist"; sourceTree = "<group>"; };
 		EBEF6BE217E40BFC00FD9D4D /* en */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = en; path = en.lproj/InfoPlist.strings; sourceTree = "<group>"; };
 		EBEF6BE417E40BFC00FD9D4D /* BZGFormFieldTests.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = BZGFormFieldTests.m; sourceTree = "<group>"; };
+		EBEF6BF117E4197900FD9D4D /* BZGFormField.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = BZGFormField.h; sourceTree = "<group>"; };
+		EBEF6BF217E4197900FD9D4D /* BZGFormField.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = BZGFormField.m; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -112,6 +115,8 @@
 		EBEF6BBF17E40BFC00FD9D4D /* BZGFormField */ = {
 			isa = PBXGroup;
 			children = (
+				EBEF6BF117E4197900FD9D4D /* BZGFormField.h */,
+				EBEF6BF217E4197900FD9D4D /* BZGFormField.m */,
 				EBEF6BC817E40BFC00FD9D4D /* BZGAppDelegate.h */,
 				EBEF6BC917E40BFC00FD9D4D /* BZGAppDelegate.m */,
 				EBEF6BCB17E40BFC00FD9D4D /* Main.storyboard */,
@@ -250,6 +255,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				EBEF6BF317E4197900FD9D4D /* BZGFormField.m in Sources */,
 				EBEF6BCA17E40BFC00FD9D4D /* BZGAppDelegate.m in Sources */,
 				EBEF6BD017E40BFC00FD9D4D /* BZGViewController.m in Sources */,
 				EBEF6BC617E40BFC00FD9D4D /* main.m in Sources */,
