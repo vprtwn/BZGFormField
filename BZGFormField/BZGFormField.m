@@ -181,7 +181,7 @@ typedef NS_ENUM(NSInteger, BZGFormFieldState) {
 {
     [super layoutSubviews];
     [self updateLeftIndicatorAspectRatio:_currentLeftIndicatorAspectRatio animated:NO];
-    self.leftIndicator.titleLabel.font = [UIFont boldSystemFontOfSize:
+    self.leftIndicator.titleLabel.font = [UIFont systemFontOfSize:
                                           self.textField.font.pointSize*1.5];
 
 

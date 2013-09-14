@@ -13,10 +13,10 @@
 @property (strong, nonatomic) UIButton *leftIndicator;
 @property (strong, nonatomic) UITextField *textField;
 
-// sets the aspect ratio of the left indicator for the inactive state
+// sets the aspect ratio of the left indicator for the inactive state (editing, not tappable)
 - (void)setLeftIndicatorInactiveAspectRatio:(CGFloat)aspectRatio;
 
-// sets the aspect ratio of the left indicator for the active state
+// sets the aspect ratio of the left indicator for the active state (not editing, tappable)
 - (void)setLeftIndicatorActiveAspectRatio:(CGFloat)aspectRatio;
 
 
