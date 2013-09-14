@@ -8,7 +8,7 @@
 
 #import <UIKit/UIKit.h>
 
-@interface BZGFormField : UIView <UITextFieldDelegate>
+@interface BZGFormField : UIView <UITextFieldDelegate, UIAlertViewDelegate>
 
 @property (strong, nonatomic) UIButton *leftIndicator;
 @property (strong, nonatomic) UITextField *textField;

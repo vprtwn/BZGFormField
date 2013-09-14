@@ -8,10 +8,19 @@
 
 #import "BZGFormField.h"
 
+#define UIColorFromRGB(rgbValue) \
+[UIColor colorWithRed:((float)((rgbValue & 0xFF0000) >> 16))/255.0 \
+green:((float)((rgbValue & 0xFF00) >> 8))/255.0 \
+blue:((float)(rgbValue & 0xFF))/255.0 \
+alpha:1.0]
+
 // relative to self.frame.height
 #define DEFAULT_LEFT_TEXT_PADDING 0.2
 #define DEFAULT_LEFT_INDICATOR_INACTIVE_ASPECT_RATIO 0.2
 #define DEFAULT_LEFT_INDICATOR_ACTIVE_ASPECT_RATIO 0.8
+#define DEFAULT_NONE_COLOR UIColorFromRGB(0x95A5A6)
+#define DEFAULT_VALID_COLOR UIColorFromRGB(0x2ECC71)
+#define DEFAULT_INVALID_COLOR UIColorFromRGB(0xE74C3C)
 
 typedef NS_ENUM(NSInteger, BZGLeftIndicatorState) {
     BZGLeftIndicatorStateInactive,
@@ -23,6 +32,15 @@ typedef NS_ENUM(NSInteger, BZGFormFieldState) {
     BZGFormFieldStateValid,
     BZGFormFieldStateNone
 };
+
+@interface BZGFormField ()
+
+@property (strong, nonatomic) UIColor *invalidColor;
+@property (strong, nonatomic) UIColor *validColor;
+@property (strong, nonatomic) UIColor *noneColor;
+
+@end
+
 
 @implementation BZGFormField {
     CGFloat _leftIndicatorInactiveAspectRatio;
@@ -75,22 +93,28 @@ typedef NS_ENUM(NSInteger, BZGFormFieldState) {
     _currentLeftIndicatorAspectRatio = _leftIndicatorInactiveAspectRatio;
     _leftTextPadding = DEFAULT_LEFT_TEXT_PADDING;
 
+    self.invalidColor = DEFAULT_NONE_COLOR;
+    self.validColor = DEFAULT_VALID_COLOR;
+    self.invalidColor = DEFAULT_INVALID_COLOR;
+
     self.textField = [[UITextField alloc] init];
-    self.textField.backgroundColor = [UIColor whiteColor]; // delete this
+    self.textField.backgroundColor = [UIColor whiteColor];
     self.textField.borderStyle = UITextBorderStyleNone;
     self.textField.delegate = self;
     self.textField.autocorrectionType = UITextAutocorrectionTypeNo;
     self.textField.autocapitalizationType = UITextAutocapitalizationTypeNone;
-    self.textField.placeholder = @"TEST";
+    self.textField.placeholder = @"Placeholder";
+    self.textField.text = @" ";
     [self addSubview:self.textField];
 
     self.leftIndicator = [UIButton buttonWithType:UIButtonTypeCustom];
-    self.leftIndicator.backgroundColor = [UIColor grayColor];
     self.leftIndicator.titleLabel.textColor = [UIColor whiteColor];
-    self.leftIndicator.titleLabel.font = [UIFont boldSystemFontOfSize:
-                                          self.textField.font.pointSize*1.5];
-    [self.leftIndicator setTitle:@"" forState:UIControlStateNormal];
+    [self.leftIndicator addTarget:self action:@selector(leftIndicatorTouch) forControlEvents:UIControlEventTouchUpInside];
     [self addSubview:self.leftIndicator];
+    [self updateWithLeftIndicatorState:BZGLeftIndicatorStateInactive
+                        formFieldState:BZGFormFieldStateNone animated:NO];
+    self.textField.text = @"";
+
 }
 
 #pragma mark - Drawing
@@ -114,17 +138,17 @@ typedef NS_ENUM(NSInteger, BZGFormFieldState) {
     }
     switch (formFieldState) {
         case BZGFormFieldStateNone:
-            self.leftIndicator.backgroundColor = [UIColor grayColor];
+            self.leftIndicator.backgroundColor = self.noneColor;
             [self.leftIndicator setTitle:@"" forState:UIControlStateNormal];
             break;
         case BZGFormFieldStateInvalid:
-            self.leftIndicator.backgroundColor = [UIColor redColor];
+            self.leftIndicator.backgroundColor = self.invalidColor;
             [self.leftIndicator setTitle:(newLeftIndicatorState) ? @"!" : @""
                                 forState:UIControlStateNormal];
             break;
         case BZGFormFieldStateValid:
         default:
-            self.leftIndicator.backgroundColor = [UIColor greenColor];
+            self.leftIndicator.backgroundColor = self.validColor;
             [self.leftIndicator setTitle:@"" forState:UIControlStateNormal];
             break;
     }
@@ -132,6 +156,7 @@ typedef NS_ENUM(NSInteger, BZGFormFieldState) {
 
 - (void)updateLeftIndicatorAspectRatio:(CGFloat)aspectRatio animated:(BOOL)animated
 {
+    _currentLeftIndicatorAspectRatio = aspectRatio;
     void (^animations)() = ^{
         self.leftIndicator.frame = CGRectMake(self.bounds.origin.x,
                                               self.bounds.origin.y,
@@ -145,9 +170,8 @@ typedef NS_ENUM(NSInteger, BZGFormFieldState) {
                                           self.bounds.size.height);
 
     };
-    _currentLeftIndicatorAspectRatio = aspectRatio;
     if (animated) {
-        [UIView animateWithDuration:0.3 animations:animations];
+        [UIView animateWithDuration:0.3 delay:0 options:UIViewAnimationOptionLayoutSubviews animations:animations completion:nil];
     } else {
         animations();
     }
@@ -182,6 +206,18 @@ replacementString:(NSString *)string
     if (textField.text.length <= 5) {
         [self updateWithLeftIndicatorState:BZGLeftIndicatorStateActive formFieldState:BZGFormFieldStateInvalid animated:YES];
     }
+}
+
+#pragma mark - Actions
+
+- (void)leftIndicatorTouch
+{
+    UIAlertView *alertView = [[UIAlertView alloc] initWithTitle:@"alert view"
+                                                        message:@"woop"
+                                                       delegate:self
+                                              cancelButtonTitle:@"swag"
+                                              otherButtonTitles:nil];
+    [alertView show];
 }
 
 
