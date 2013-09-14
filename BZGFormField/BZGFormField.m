@@ -125,17 +125,26 @@ typedef NS_ENUM(NSInteger, BZGFormFieldState) {
                            action:@selector(leftIndicatorTouchUp)
                  forControlEvents:UIControlEventTouchUpInside | UIControlEventTouchUpOutside];
     [self addSubview:self.leftIndicator];
-    [self updateWithLeftIndicatorState:BZGLeftIndicatorStateInactive
+    [self updateLeftIndicatorState:BZGLeftIndicatorStateInactive
                         formFieldState:BZGFormFieldStateNone animated:NO];
     self.textField.text = @"";
+
+    [self setTextValidationBlock:_textValidationBlock];
+
+    self.alertView = [[UIAlertView alloc] initWithTitle:@""
+                                                message:@""
+                                               delegate:self
+                                      cancelButtonTitle:@"Ok"
+                                      otherButtonTitles:nil];
+    self.alertView.delegate = self;
 
 }
 
 #pragma mark - Drawing
 
-- (void)updateWithLeftIndicatorState:(BZGLeftIndicatorState)newLeftIndicatorState
-                      formFieldState:(BZGFormFieldState)formFieldState
-                            animated:(BOOL)animated
+- (void)updateLeftIndicatorState:(BZGLeftIndicatorState)newLeftIndicatorState
+                  formFieldState:(BZGFormFieldState)formFieldState
+                        animated:(BOOL)animated
 {
     BOOL shouldAnimate = (_currentLeftIndicatorState && !newLeftIndicatorState) || animated;
     _currentLeftIndicatorState = newLeftIndicatorState;
@@ -231,11 +240,11 @@ typedef NS_ENUM(NSInteger, BZGFormFieldState) {
 - (void)textFieldDidEndEditing:(UITextField *)textField
 {
     if (textField.text.length == 0) {
-        [self updateWithLeftIndicatorState:BZGLeftIndicatorStateInactive formFieldState:BZGFormFieldStateNone animated:NO];
-    } else if (textField.text.length <= 5) {
-        [self updateWithLeftIndicatorState:BZGLeftIndicatorStateActive formFieldState:BZGFormFieldStateInvalid animated:YES];
+        [self updateLeftIndicatorState:BZGLeftIndicatorStateInactive formFieldState:BZGFormFieldStateNone animated:NO];
+    } else if (_textValidationBlock(textField.text)) {
+        [self updateLeftIndicatorState:BZGLeftIndicatorStateInactive formFieldState:BZGFormFieldStateValid animated:NO];
     } else {
-        [self updateWithLeftIndicatorState:BZGLeftIndicatorStateInactive formFieldState:BZGFormFieldStateValid animated:NO];
+        [self updateLeftIndicatorState:BZGLeftIndicatorStateActive formFieldState:BZGFormFieldStateInvalid animated:YES];
     }
 
     if ([self.delegate respondsToSelector:@selector(textFieldDidEndEditing:)]) {
@@ -247,17 +256,17 @@ typedef NS_ENUM(NSInteger, BZGFormFieldState) {
 shouldChangeCharactersInRange:(NSRange)range
 replacementString:(NSString *)string
 {
-    if (textField.text.length > 4) {
-        [self updateWithLeftIndicatorState:BZGLeftIndicatorStateInactive formFieldState:BZGFormFieldStateValid animated:NO];
-    } else {
-        [self updateWithLeftIndicatorState:BZGLeftIndicatorStateInactive formFieldState:BZGFormFieldStateInvalid animated:NO];
-    }
-
     if ([self.delegate respondsToSelector:@selector(textField:shouldChangeCharactersInRange:replacementString:)]) {
         return [self.delegate textField:textField
           shouldChangeCharactersInRange:range
                       replacementString:string];
     } else {
+        NSString *newText = [textField.text stringByReplacingCharactersInRange:range withString:string];
+        if (_textValidationBlock(newText)) {
+            [self updateLeftIndicatorState:BZGLeftIndicatorStateInactive formFieldState:BZGFormFieldStateValid animated:NO];
+        } else {
+            [self updateLeftIndicatorState:BZGLeftIndicatorStateInactive formFieldState:BZGFormFieldStateInvalid animated:NO];
+        }
         return YES;
     }
 }
@@ -284,7 +293,16 @@ replacementString:(NSString *)string
     }
 }
 
+#pragma mark - UIAlertViewDelegate
 
+- (void)alertView:(UIAlertView *)alertView willDismissWithButtonIndex:(NSInteger)buttonIndex
+{
+    [self.textField becomeFirstResponder];
+
+    if ([self.delegate respondsToSelector:@selector(alertView:willDismissWithButtonIndex:)]) {
+        [self.delegate alertView:alertView willDismissWithButtonIndex:buttonIndex];
+    }
+}
 
 #pragma mark - Actions
 
@@ -299,12 +317,7 @@ replacementString:(NSString *)string
     UIColor *color = [self.leftIndicator.backgroundColor colorWithAlphaComponent:1.0];
     self.leftIndicator.backgroundColor = color;
 
-    UIAlertView *alertView = [[UIAlertView alloc] initWithTitle:@"alert view"
-                                                        message:@"woop"
-                                                       delegate:self
-                                              cancelButtonTitle:@"swag"
-                                              otherButtonTitles:nil];
-    [alertView show];
+    [self.alertView show];
 }
 
 

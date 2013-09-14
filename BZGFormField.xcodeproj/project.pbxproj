@@ -7,14 +7,14 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		EBADBDB117E4FCFA00760DAA /* DemoViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = EBADBDAF17E4FCFA00760DAA /* DemoViewController.m */; };
+		EBADBDB217E4FCFA00760DAA /* DemoViewController.xib in Resources */ = {isa = PBXBuildFile; fileRef = EBADBDB017E4FCFA00760DAA /* DemoViewController.xib */; };
 		EBEF6BBA17E40BFC00FD9D4D /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = EBEF6BB917E40BFC00FD9D4D /* Foundation.framework */; };
 		EBEF6BBC17E40BFC00FD9D4D /* CoreGraphics.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = EBEF6BBB17E40BFC00FD9D4D /* CoreGraphics.framework */; };
 		EBEF6BBE17E40BFC00FD9D4D /* UIKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = EBEF6BBD17E40BFC00FD9D4D /* UIKit.framework */; };
 		EBEF6BC417E40BFC00FD9D4D /* InfoPlist.strings in Resources */ = {isa = PBXBuildFile; fileRef = EBEF6BC217E40BFC00FD9D4D /* InfoPlist.strings */; };
 		EBEF6BC617E40BFC00FD9D4D /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = EBEF6BC517E40BFC00FD9D4D /* main.m */; };
 		EBEF6BCA17E40BFC00FD9D4D /* BZGAppDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = EBEF6BC917E40BFC00FD9D4D /* BZGAppDelegate.m */; };
-		EBEF6BCD17E40BFC00FD9D4D /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = EBEF6BCB17E40BFC00FD9D4D /* Main.storyboard */; };
-		EBEF6BD017E40BFC00FD9D4D /* BZGViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = EBEF6BCF17E40BFC00FD9D4D /* BZGViewController.m */; };
 		EBEF6BD217E40BFC00FD9D4D /* Images.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = EBEF6BD117E40BFC00FD9D4D /* Images.xcassets */; };
 		EBEF6BD917E40BFC00FD9D4D /* XCTest.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = EBEF6BD817E40BFC00FD9D4D /* XCTest.framework */; };
 		EBEF6BDA17E40BFC00FD9D4D /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = EBEF6BB917E40BFC00FD9D4D /* Foundation.framework */; };
@@ -35,6 +35,9 @@
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
+		EBADBDAE17E4FCFA00760DAA /* DemoViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = DemoViewController.h; sourceTree = "<group>"; };
+		EBADBDAF17E4FCFA00760DAA /* DemoViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = DemoViewController.m; sourceTree = "<group>"; };
+		EBADBDB017E4FCFA00760DAA /* DemoViewController.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = DemoViewController.xib; sourceTree = "<group>"; };
 		EBEF6BB617E40BFC00FD9D4D /* BZGFormField.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = BZGFormField.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		EBEF6BB917E40BFC00FD9D4D /* Foundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Foundation.framework; path = System/Library/Frameworks/Foundation.framework; sourceTree = SDKROOT; };
 		EBEF6BBB17E40BFC00FD9D4D /* CoreGraphics.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreGraphics.framework; path = System/Library/Frameworks/CoreGraphics.framework; sourceTree = SDKROOT; };
@@ -45,9 +48,6 @@
 		EBEF6BC717E40BFC00FD9D4D /* BZGFormField-Prefix.pch */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "BZGFormField-Prefix.pch"; sourceTree = "<group>"; };
 		EBEF6BC817E40BFC00FD9D4D /* BZGAppDelegate.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = BZGAppDelegate.h; sourceTree = "<group>"; };
 		EBEF6BC917E40BFC00FD9D4D /* BZGAppDelegate.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = BZGAppDelegate.m; sourceTree = "<group>"; };
-		EBEF6BCC17E40BFC00FD9D4D /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/Main.storyboard; sourceTree = "<group>"; };
-		EBEF6BCE17E40BFC00FD9D4D /* BZGViewController.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = BZGViewController.h; sourceTree = "<group>"; };
-		EBEF6BCF17E40BFC00FD9D4D /* BZGViewController.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = BZGViewController.m; sourceTree = "<group>"; };
 		EBEF6BD117E40BFC00FD9D4D /* Images.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Images.xcassets; sourceTree = "<group>"; };
 		EBEF6BD717E40BFC00FD9D4D /* BZGFormFieldTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = BZGFormFieldTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		EBEF6BD817E40BFC00FD9D4D /* XCTest.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = XCTest.framework; path = Library/Frameworks/XCTest.framework; sourceTree = DEVELOPER_DIR; };
@@ -119,9 +119,9 @@
 				EBEF6BF217E4197900FD9D4D /* BZGFormField.m */,
 				EBEF6BC817E40BFC00FD9D4D /* BZGAppDelegate.h */,
 				EBEF6BC917E40BFC00FD9D4D /* BZGAppDelegate.m */,
-				EBEF6BCB17E40BFC00FD9D4D /* Main.storyboard */,
-				EBEF6BCE17E40BFC00FD9D4D /* BZGViewController.h */,
-				EBEF6BCF17E40BFC00FD9D4D /* BZGViewController.m */,
+				EBADBDAE17E4FCFA00760DAA /* DemoViewController.h */,
+				EBADBDAF17E4FCFA00760DAA /* DemoViewController.m */,
+				EBADBDB017E4FCFA00760DAA /* DemoViewController.xib */,
 				EBEF6BD117E40BFC00FD9D4D /* Images.xcassets */,
 				EBEF6BC017E40BFC00FD9D4D /* Supporting Files */,
 			);
@@ -236,7 +236,7 @@
 			files = (
 				EBEF6BD217E40BFC00FD9D4D /* Images.xcassets in Resources */,
 				EBEF6BC417E40BFC00FD9D4D /* InfoPlist.strings in Resources */,
-				EBEF6BCD17E40BFC00FD9D4D /* Main.storyboard in Resources */,
+				EBADBDB217E4FCFA00760DAA /* DemoViewController.xib in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -257,7 +257,7 @@
 			files = (
 				EBEF6BF317E4197900FD9D4D /* BZGFormField.m in Sources */,
 				EBEF6BCA17E40BFC00FD9D4D /* BZGAppDelegate.m in Sources */,
-				EBEF6BD017E40BFC00FD9D4D /* BZGViewController.m in Sources */,
+				EBADBDB117E4FCFA00760DAA /* DemoViewController.m in Sources */,
 				EBEF6BC617E40BFC00FD9D4D /* main.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -287,14 +287,6 @@
 				EBEF6BC317E40BFC00FD9D4D /* en */,
 			);
 			name = InfoPlist.strings;
-			sourceTree = "<group>";
-		};
-		EBEF6BCB17E40BFC00FD9D4D /* Main.storyboard */ = {
-			isa = PBXVariantGroup;
-			children = (
-				EBEF6BCC17E40BFC00FD9D4D /* Base */,
-			);
-			name = Main.storyboard;
 			sourceTree = "<group>";
 		};
 		EBEF6BE117E40BFC00FD9D4D /* InfoPlist.strings */ = {
@@ -467,6 +459,7 @@
 				EBEF6BEA17E40BFC00FD9D4D /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
 		};
 		EBEF6BEB17E40BFC00FD9D4D /* Build configuration list for PBXNativeTarget "BZGFormFieldTests" */ = {
 			isa = XCConfigurationList;
@@ -475,6 +468,7 @@
 				EBEF6BED17E40BFC00FD9D4D /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
 		};
 /* End XCConfigurationList section */
 	};

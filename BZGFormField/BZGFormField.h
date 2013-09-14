@@ -15,6 +15,7 @@ typedef BOOL (^BZGTextValidationBlock)(NSString *text);
 
 @interface BZGFormField : UIView <UITextFieldDelegate, UIAlertViewDelegate>
 
+@property (strong, nonatomic) UIAlertView *alertView;
 @property (strong, nonatomic) UIButton *leftIndicator;
 @property (strong, nonatomic) UITextField *textField;
 @property (weak, nonatomic) id <BZGFormFieldDelegate> delegate;
@@ -30,7 +31,7 @@ typedef BOOL (^BZGTextValidationBlock)(NSString *text);
 
 @end
 
-@protocol BZGFormFieldDelegate <UITextFieldDelegate>
+@protocol BZGFormFieldDelegate <UITextFieldDelegate, UIAlertViewDelegate>
 
 
 @end
