@@ -1,14 +1,18 @@
 //
-//  BZGFormFieldTests.m
-//  BZGFormFieldTests
+// BZGFormFieldTests.m
 //
-//  Created by Ben Guo on 9/13/13.
-//  Copyright (c) 2013 BZG. All rights reserved.
+// Copyright (c) 2013 Ben Guo
+//
+// https://github.com/benzguo/BZGFormField
 //
 
 #import <XCTest/XCTest.h>
+#import "BZGFormField.h"
 
 @interface BZGFormFieldTests : XCTestCase
+{
+    BZGFormField *formField;
+}
 
 @end
 
@@ -17,18 +21,34 @@
 - (void)setUp
 {
     [super setUp];
-    // Put setup code here. This method is called before the invocation of each test method in the class.
+    formField = [[BZGFormField alloc] initWithFrame:CGRectMake(0, 0, 280, 40)];
 }
 
 - (void)tearDown
 {
-    // Put teardown code here. This method is called after the invocation of each test method in the class.
+    formField = nil;
     [super tearDown];
 }
 
-- (void)testExample
+- (void)testInitialization
 {
-    XCTFail(@"No implementation for \"%s\"", __PRETTY_FUNCTION__);
+    // alert view
+    XCTAssertTrue([formField.alertView.title isEqualToString:@""]);
+    XCTAssertTrue([formField.alertView.message isEqualToString:@""]);
+    XCTAssertTrue([[formField.alertView buttonTitleAtIndex:formField.alertView.cancelButtonIndex]
+                   isEqualToString:@"Ok"]);
+    XCTAssertTrue(formField.alertView.delegate == formField);
+
+    // text field
+    XCTAssertTrue([formField.textField.text isEqualToString:@""]);
+    XCTAssertTrue(formField.textField.borderStyle == UITextBorderStyleNone);
+    XCTAssertTrue(!formField.textField.placeholder);
+    XCTAssertTrue(formField.textField.delegate == formField);
+
+    // state
+    XCTAssertTrue([formField formFieldState] == BZGFormFieldStateNone);
+    XCTAssertTrue([formField leftIndicatorState] == BZGLeftIndicatorStateInactive);
 }
+
 
 @end

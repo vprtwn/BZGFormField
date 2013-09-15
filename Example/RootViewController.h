@@ -1,16 +1,17 @@
 //
-//  DemoViewController.h
-//  BZGFormField
+// RootViewController.h
 //
-//  Created by Ben Guo on 9/14/13.
-//  Copyright (c) 2013 BZG. All rights reserved.
+// Copyright (c) 2013 Ben Guo
+//
+// https://github.com/benzguo/BZGFormField
 //
 
 #import <UIKit/UIKit.h>
+#import "BZGFormField.h"
 
-@class BZGFormField;
+@protocol BZGFormFieldDelegate;
 
-@interface DemoViewController : UIViewController
+@interface RootViewController : UIViewController <BZGFormFieldDelegate>
 
 @property (weak, nonatomic) IBOutlet BZGFormField *emailField;
 @property (weak, nonatomic) IBOutlet BZGFormField *passwordField;

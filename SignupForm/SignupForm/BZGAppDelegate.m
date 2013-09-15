@@ -1,25 +1,21 @@
 //
 //  BZGAppDelegate.m
-//  BZGFormField
+//  SignupForm
 //
-//  Created by Ben Guo on 9/13/13.
+//  Created by Ben Guo on 9/14/13.
 //  Copyright (c) 2013 BZG. All rights reserved.
 //
 
 #import "BZGAppDelegate.h"
-#import "DemoViewController.h"
 
 @implementation BZGAppDelegate
 
 - (BOOL)application:(UIApplication *)application didFinishLaunchingWithOptions:(NSDictionary *)launchOptions
 {
-    self.window = [[UIWindow alloc] initWithFrame:[[UIScreen mainScreen] bounds]];
-    DemoViewController *demoVC = [[DemoViewController alloc] initWithNibName:@"DemoViewController" bundle:nil];
-    self.window.rootViewController = demoVC;
-    [self.window makeKeyAndVisible];
+    // Override point for customization after application launch.
     return YES;
 }
-
+							
 - (void)applicationWillResignActive:(UIApplication *)application
 {
     // Sent when the application is about to move from active to inactive state. This can occur for certain types of temporary interruptions (such as an incoming phone call or SMS message) or when the user quits the application and it begins the transition to the background state.
@@ -28,7 +24,7 @@
 
 - (void)applicationDidEnterBackground:(UIApplication *)application
 {
-    // Use this method to release shared resources, save user data, invalidate timers, and store enough application state information to restore your application to its current state in case it is terminated later.
+    // Use this method to release shared resources, save user data, invalidate timers, and store enough application state information to restore your application to its current state in case it is terminated later. 
     // If your application supports background execution, this method is called instead of applicationWillTerminate: when the user quits.
 }
 
@@ -46,6 +42,5 @@
 {
     // Called when the application is about to terminate. Save data if appropriate. See also applicationDidEnterBackground:.
 }
-
 
 @end

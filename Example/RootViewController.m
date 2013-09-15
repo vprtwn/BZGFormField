@@ -1,28 +1,28 @@
 //
-//  DemoViewController.m
-//  BZGFormField
+// RootViewController.m
 //
-//  Created by Ben Guo on 9/14/13.
-//  Copyright (c) 2013 BZG. All rights reserved.
+// Copyright (c) 2013 Ben Guo
+//
+// https://github.com/benzguo/BZGFormField
 //
 
-#import "DemoViewController.h"
+#import "RootViewController.h"
 #import "BZGFormField.h"
 
-@interface DemoViewController ()
+@interface RootViewController ()
 
 @end
 
-@implementation DemoViewController
+@implementation RootViewController
 
 - (void)viewDidLoad
 {
     [super viewDidLoad];
 
     self.emailField.textField.placeholder = @"Email";
-    __weak DemoViewController *weakSelf = self;
+    __weak RootViewController *weakSelf = self;
     [self.emailField setTextValidationBlock:^BOOL(NSString *text) {
-        // source https://github.com/benmcredmond/DHValidation/blob/master/DHValidation.m
+        // from https://github.com/benmcredmond/DHValidation/blob/master/DHValidation.m
         NSString *emailRegex = @"[A-Z0-9a-z._%+-]+@[A-Za-z0-9.-]+\\.[A-Za-z]{2,4}";
         NSPredicate *emailTest = [NSPredicate predicateWithFormat:@"SELF MATCHES %@", emailRegex];
         if (![emailTest evaluateWithObject:text]) {
@@ -32,6 +32,8 @@
             return YES;
         }
     }];
+    self.emailField.delegate = self;
+
     self.passwordField.textField.placeholder = @"Password";
     self.passwordField.textField.secureTextEntry = YES;
     [self.passwordField setTextValidationBlock:^BOOL(NSString *text) {
@@ -42,6 +44,8 @@
             return YES;
         }
     }];
+    self.passwordField.delegate = self;
+
     self.passwordConfirmField.textField.placeholder = @"Confirm Password";
     self.passwordConfirmField.textField.secureTextEntry = YES;
     [self.passwordConfirmField setTextValidationBlock:^BOOL(NSString *text) {
@@ -52,6 +56,14 @@
             return YES;
         }
     }];
+    self.passwordConfirmField.delegate = self;
+}
+
+#pragma mark - BZGFormFieldDelegate
+
+- (BOOL)textFieldShouldReturn:(UITextField *)textField
+{
+    return [textField resignFirstResponder];
 }
 
 @end

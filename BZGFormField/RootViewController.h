@@ -1,5 +1,5 @@
 //
-// main.m
+// RootViewController.h
 //
 // Copyright (c) 2013 Ben Guo
 //
@@ -22,12 +22,14 @@
 // THE SOFTWARE.
 
 #import <UIKit/UIKit.h>
+#import "BZGFormField.h"
 
-#import "AppDelegate.h"
+@protocol BZGFormFieldDelegate;
 
-int main(int argc, char * argv[])
-{
-    @autoreleasepool {
-        return UIApplicationMain(argc, argv, nil, NSStringFromClass([AppDelegate class]));
-    }
-}
+@interface RootViewController : UIViewController <BZGFormFieldDelegate>
+
+@property (weak, nonatomic) IBOutlet BZGFormField *emailField;
+@property (weak, nonatomic) IBOutlet BZGFormField *passwordField;
+@property (weak, nonatomic) IBOutlet BZGFormField *passwordConfirmField;
+
+@end

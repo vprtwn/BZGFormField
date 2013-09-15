@@ -1,10 +1,25 @@
 //
-//  BZGFormField.m
-//  BZGFormField
+// BZGFormField.m
 //
-//  Created by Ben Guo on 9/14/13.
-//  Copyright (c) 2013 BZG. All rights reserved.
+// Copyright (c) 2013 Ben Guo
 //
+// Permission is hereby granted, free of charge, to any person obtaining a copy
+// of this software and associated documentation files (the "Software"), to deal
+// in the Software without restriction, including without limitation the rights
+// to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+// copies of the Software, and to permit persons to whom the Software is
+// furnished to do so, subject to the following conditions:
+//
+// The above copyright notice and this permission notice shall be included in
+// all copies or substantial portions of the Software.
+//
+// THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+// IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+// FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+// AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+// LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+// OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
+// THE SOFTWARE.
 
 #import "BZGFormField.h"
 
@@ -22,53 +37,26 @@ alpha:1.0]
 #define DEFAULT_VALID_COLOR UIColorFromRGB(0x2ECC71)
 #define DEFAULT_INVALID_COLOR UIColorFromRGB(0xE74C3C)
 
-typedef NS_ENUM(NSInteger, BZGLeftIndicatorState) {
-    BZGLeftIndicatorStateInactive,
-    BZGLeftIndicatorStateActive
-};
-
-typedef NS_ENUM(NSInteger, BZGFormFieldState) {
-    BZGFormFieldStateInvalid,
-    BZGFormFieldStateValid,
-    BZGFormFieldStateNone
-};
-
-@interface BZGFormField ()
-
-@property (strong, nonatomic) UIColor *invalidColor;
-@property (strong, nonatomic) UIColor *validColor;
-@property (strong, nonatomic) UIColor *noneColor;
-
-@end
-
-
 @implementation BZGFormField {
-    CGFloat _leftIndicatorInactiveAspectRatio;
-    CGFloat _leftIndicatorActiveAspectRatio;
-    CGFloat _leftTextPadding;
-
     CGFloat _currentLeftIndicatorAspectRatio;
     BZGLeftIndicatorState _currentLeftIndicatorState;
+    BZGFormFieldState _currentFormFieldState;
 
     BZGTextValidationBlock _textValidationBlock;
 }
 
 #pragma mark - Public
 
-- (void)setLeftIndicatorInactiveAspectRatio:(CGFloat)aspectRatio
+- (BZGLeftIndicatorState)leftIndicatorState
 {
-    _leftIndicatorInactiveAspectRatio = aspectRatio;
+    return _currentLeftIndicatorState;
 }
 
-- (void)setLeftIndicatorActiveAspectRatio:(CGFloat)aspectRatio
+- (BZGFormFieldState)formFieldState
 {
-    _leftIndicatorActiveAspectRatio = aspectRatio;
+    return _currentFormFieldState;
 }
 
-- (void)setLeftTextPadding:(CGFloat)leftTextPadding
-{
-    _leftTextPadding = leftTextPadding;
-}
 
 - (void)setTextValidationBlock:(BZGTextValidationBlock)block
 {
@@ -97,22 +85,21 @@ typedef NS_ENUM(NSInteger, BZGFormFieldState) {
 
 - (void)setup
 {
-    _leftIndicatorInactiveAspectRatio = DEFAULT_LEFT_INDICATOR_INACTIVE_ASPECT_RATIO;
-    _leftIndicatorActiveAspectRatio = DEFAULT_LEFT_INDICATOR_ACTIVE_ASPECT_RATIO;
-    _currentLeftIndicatorAspectRatio = _leftIndicatorInactiveAspectRatio;
-    _leftTextPadding = DEFAULT_LEFT_TEXT_PADDING;
+    self.leftIndicatorInactiveWidth = DEFAULT_LEFT_INDICATOR_INACTIVE_ASPECT_RATIO;
+    self.leftIndicatorActiveWidth = DEFAULT_LEFT_INDICATOR_ACTIVE_ASPECT_RATIO;
+    self.leftIndicatorRightPadding = DEFAULT_LEFT_TEXT_PADDING;
+    _currentLeftIndicatorAspectRatio = self.leftIndicatorInactiveWidth;
+    _textValidationBlock = ^BOOL(NSString *text) { return YES; };
 
-    self.noneColor = DEFAULT_NONE_COLOR;
-    self.validColor = DEFAULT_VALID_COLOR;
-    self.invalidColor = DEFAULT_INVALID_COLOR;
+    self.leftIndicatorInvalidColor = DEFAULT_INVALID_COLOR;
+    self.leftIndicatorValidColor = DEFAULT_VALID_COLOR;
+    self.leftIndicatorNoneColor = DEFAULT_NONE_COLOR;
 
     self.textField = [[UITextField alloc] init];
-    self.textField.backgroundColor = [UIColor whiteColor];
     self.textField.borderStyle = UITextBorderStyleNone;
     self.textField.delegate = self;
     self.textField.autocorrectionType = UITextAutocorrectionTypeNo;
     self.textField.autocapitalizationType = UITextAutocapitalizationTypeNone;
-    self.textField.placeholder = @"Placeholder";
     self.textField.text = @" ";
     [self addSubview:self.textField];
 
@@ -142,36 +129,37 @@ typedef NS_ENUM(NSInteger, BZGFormFieldState) {
 
 #pragma mark - Drawing
 
-- (void)updateLeftIndicatorState:(BZGLeftIndicatorState)newLeftIndicatorState
+- (void)updateLeftIndicatorState:(BZGLeftIndicatorState)leftIndicatorState
                   formFieldState:(BZGFormFieldState)formFieldState
                         animated:(BOOL)animated
 {
-    BOOL shouldAnimate = (_currentLeftIndicatorState && !newLeftIndicatorState) || animated;
-    _currentLeftIndicatorState = newLeftIndicatorState;
-    switch (newLeftIndicatorState) {
+    BOOL shouldAnimate = (_currentLeftIndicatorState && !leftIndicatorState) || animated;
+    _currentLeftIndicatorState = leftIndicatorState;
+    _currentFormFieldState = formFieldState;
+    switch (leftIndicatorState) {
         case BZGLeftIndicatorStateInactive:
             self.leftIndicator.userInteractionEnabled = NO;
-            [self updateLeftIndicatorAspectRatio:_leftIndicatorInactiveAspectRatio animated:shouldAnimate];
+            [self updateLeftIndicatorAspectRatio:self.leftIndicatorInactiveWidth animated:shouldAnimate];
             break;
         case BZGLeftIndicatorStateActive:
         default:
             self.leftIndicator.userInteractionEnabled = YES;
-            [self updateLeftIndicatorAspectRatio:_leftIndicatorActiveAspectRatio animated:shouldAnimate];
+            [self updateLeftIndicatorAspectRatio:self.leftIndicatorActiveWidth animated:shouldAnimate];
             break;
     }
     switch (formFieldState) {
         case BZGFormFieldStateNone:
-            self.leftIndicator.backgroundColor = self.noneColor;
+            self.leftIndicator.backgroundColor = self.leftIndicatorNoneColor;
             [self.leftIndicator setTitle:@"" forState:UIControlStateNormal];
             break;
         case BZGFormFieldStateInvalid:
-            self.leftIndicator.backgroundColor = self.invalidColor;
-            [self.leftIndicator setTitle:(newLeftIndicatorState) ? @"!" : @""
+            self.leftIndicator.backgroundColor = self.leftIndicatorInvalidColor;
+            [self.leftIndicator setTitle:(leftIndicatorState) ? @"!" : @""
                                 forState:UIControlStateNormal];
             break;
         case BZGFormFieldStateValid:
         default:
-            self.leftIndicator.backgroundColor = self.validColor;
+            self.leftIndicator.backgroundColor = self.leftIndicatorValidColor;
             [self.leftIndicator setTitle:@"" forState:UIControlStateNormal];
             break;
     }
@@ -186,7 +174,7 @@ typedef NS_ENUM(NSInteger, BZGFormFieldState) {
                                               self.bounds.size.height*_currentLeftIndicatorAspectRatio,
                                               self.bounds.size.height);
 
-        CGFloat textFieldX = self.bounds.size.height*(_currentLeftIndicatorAspectRatio+_leftTextPadding);
+        CGFloat textFieldX = self.bounds.size.height*(_currentLeftIndicatorAspectRatio+self.leftIndicatorRightPadding);
         self.textField.frame = CGRectMake(self.bounds.origin.x + textFieldX,
                                           self.bounds.origin.y,
                                           self.bounds.size.width - textFieldX,
@@ -206,8 +194,6 @@ typedef NS_ENUM(NSInteger, BZGFormFieldState) {
     [self updateLeftIndicatorAspectRatio:_currentLeftIndicatorAspectRatio animated:NO];
     self.leftIndicator.titleLabel.font = [UIFont systemFontOfSize:
                                           self.textField.font.pointSize*1.5];
-
-
 }
 
 #pragma mark - UITextFieldDelegate
@@ -282,10 +268,6 @@ replacementString:(NSString *)string
 
 - (BOOL)textFieldShouldReturn:(UITextField *)textField
 {
-    #warning testing only
-    [textField resignFirstResponder];
-    return YES;
-
     if ([self.delegate respondsToSelector:@selector(textFieldShouldReturn:)]) {
         return [self.delegate textFieldShouldReturn:textField];
     } else {
