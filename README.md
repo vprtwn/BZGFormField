@@ -40,7 +40,7 @@ __weak RootViewController *weakSelf = self;
 
 ## Usage
 
-(see sample Xcode project in `/Example`)
+* See sample Xcode project in `/Example`
 
 ## Roadmap
 
