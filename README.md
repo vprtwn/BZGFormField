@@ -1,6 +1,6 @@
 # BZGFormField
 
-`BZGFormField` is a text field with a validity indicator, meant to be used in forms that require validation.
+`BZGFormField` is a text field with a validity indicator.
 
 ![alt tag](https://raw.github.com/benzguo/BZGFormField/master/Screenshots/1.png)
 
