@@ -109,6 +109,10 @@ alpha:1.0]
                                       otherButtonTitles:nil];
     self.alertView.delegate = self;
 
+    [[NSNotificationCenter defaultCenter] addObserver:self
+                                             selector:@selector(textFieldTextDidChange:)
+                                                 name:UITextFieldTextDidChangeNotification object:nil];
+
 }
 
 #pragma mark - Drawing
@@ -226,23 +230,26 @@ alpha:1.0]
 shouldChangeCharactersInRange:(NSRange)range
 replacementString:(NSString *)string
 {
+    NSString *newText = [textField.text stringByReplacingCharactersInRange:range withString:string];
+
+    if (_textValidationBlock(newText)) {
+        [self updateLeftIndicatorState:BZGLeftIndicatorStateInactive formFieldState:BZGFormFieldStateValid animated:NO];
+    } else {
+        [self updateLeftIndicatorState:BZGLeftIndicatorStateInactive formFieldState:BZGFormFieldStateInvalid animated:NO];
+    }
     if ([self.delegate respondsToSelector:@selector(textField:shouldChangeCharactersInRange:replacementString:)]) {
         return [self.delegate textField:textField
           shouldChangeCharactersInRange:range
                       replacementString:string];
     } else {
-        NSString *newText = [textField.text stringByReplacingCharactersInRange:range withString:string];
-        if (_textValidationBlock(newText)) {
-            [self updateLeftIndicatorState:BZGLeftIndicatorStateInactive formFieldState:BZGFormFieldStateValid animated:NO];
-        } else {
-            [self updateLeftIndicatorState:BZGLeftIndicatorStateInactive formFieldState:BZGFormFieldStateInvalid animated:NO];
-        }
         return YES;
     }
 }
 
 - (BOOL)textFieldShouldClear:(UITextField *)textField
 {
+    [self updateLeftIndicatorState:BZGLeftIndicatorStateInactive formFieldState:BZGFormFieldStateNone animated:NO];
+
     if ([self.delegate respondsToSelector:@selector(textFieldShouldClear:)]) {
         return [self.delegate textFieldShouldClear:textField];
     } else {
@@ -256,6 +263,16 @@ replacementString:(NSString *)string
         return [self.delegate textFieldShouldReturn:textField];
     } else {
         return YES;
+    }
+}
+
+#pragma mark - UITextField notifications
+
+- (void)textFieldTextDidChange:(NSNotification *)notification
+{
+    UITextField *textField = (UITextField *)notification.object;
+    if ([textField isEqual:self.textField] && !textField.text.length) {
+        [self updateLeftIndicatorState:BZGLeftIndicatorStateInactive formFieldState:BZGFormFieldStateNone animated:NO];
     }
 }
 
