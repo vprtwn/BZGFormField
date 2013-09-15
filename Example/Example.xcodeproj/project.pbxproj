@@ -9,7 +9,6 @@
 /* Begin PBXBuildFile section */
 		EB1887B817E5404A00DFE6CE /* AppDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = EB1887AE17E5404A00DFE6CE /* AppDelegate.m */; };
 		EB1887BA17E5404A00DFE6CE /* Images.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = EB1887B117E5404A00DFE6CE /* Images.xcassets */; };
-		EB1887BB17E5404A00DFE6CE /* Info.plist in Resources */ = {isa = PBXBuildFile; fileRef = EB1887B217E5404A00DFE6CE /* Info.plist */; };
 		EB1887BC17E5404A00DFE6CE /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = EB1887B317E5404A00DFE6CE /* main.m */; };
 		EB1887BD17E5404A00DFE6CE /* RootViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = EB1887B617E5404A00DFE6CE /* RootViewController.m */; };
 		EB1887BE17E5404A00DFE6CE /* RootViewController.xib in Resources */ = {isa = PBXBuildFile; fileRef = EB1887B717E5404A00DFE6CE /* RootViewController.xib */; };
@@ -223,7 +222,6 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				EB1887BB17E5404A00DFE6CE /* Info.plist in Resources */,
 				EB1887BA17E5404A00DFE6CE /* Images.xcassets in Resources */,
 				EB1887BE17E5404A00DFE6CE /* RootViewController.xib in Resources */,
 			);
