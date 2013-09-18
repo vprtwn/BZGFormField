@@ -27,23 +27,18 @@ typedef BOOL (^BZGTextValidationBlock)(NSString *text);
 
 @property (weak, nonatomic) id <BZGFormFieldDelegate> delegate;
 @property (strong, nonatomic) UITextField *textField;
-@property (strong, nonatomic) UIButton *leftIndicator;
+@property (strong, nonatomic) UIView *leftIndicator;
 @property (strong, nonatomic) UIAlertView *alertView;
 
 /**
- The width of the left indicator when inactive, relative to the height of the form field.
+ The width of the left indicator, relative to the height of the form field.
  */
-@property (assign, nonatomic) CGFloat leftIndicatorInactiveWidth;
-
-/**
- The width of the left indicator when active, relative to the height of the form field.
- */
-@property (assign, nonatomic) CGFloat leftIndicatorActiveWidth;
+@property (assign, nonatomic) CGFloat leftIndicatorRelativeWidth;
 
 /**
  The padding between the left indicator and the text field, relative to the height of the form field.
  */
-@property (assign, nonatomic) CGFloat leftIndicatorRightPadding;
+@property (assign, nonatomic) CGFloat leftIndicatorRelativeRightPadding;
 
 /**
  The color of the left indicator when the form is invalid.

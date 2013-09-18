@@ -15,27 +15,18 @@ blue:((float)(rgbValue & 0xFF))/255.0 \
 alpha:1.0]
 
 // relative to self.frame.height
-#define DEFAULT_LEFT_TEXT_PADDING 0.2
-#define DEFAULT_LEFT_INDICATOR_INACTIVE_ASPECT_RATIO 0.2
-#define DEFAULT_LEFT_INDICATOR_ACTIVE_ASPECT_RATIO 0.8
+#define DEFAULT_LEFT_INDICATOR_RIGHT_PADDING 0.2
+#define DEFAULT_LEFT_INDICATOR_RELATIVE_WIDTH 0.2
 #define DEFAULT_NONE_COLOR UIColorFromRGB(0x95A5A6)
 #define DEFAULT_VALID_COLOR UIColorFromRGB(0x2ECC71)
 #define DEFAULT_INVALID_COLOR UIColorFromRGB(0xE74C3C)
 
 @implementation BZGFormField {
-    CGFloat _currentLeftIndicatorAspectRatio;
-    BZGLeftIndicatorState _currentLeftIndicatorState;
     BZGFormFieldState _currentFormFieldState;
-
     BZGTextValidationBlock _textValidationBlock;
 }
 
 #pragma mark - Public
-
-- (BZGLeftIndicatorState)leftIndicatorState
-{
-    return _currentLeftIndicatorState;
-}
 
 - (BZGFormFieldState)formFieldState
 {
@@ -70,10 +61,8 @@ alpha:1.0]
 
 - (void)setup
 {
-    self.leftIndicatorInactiveWidth = DEFAULT_LEFT_INDICATOR_INACTIVE_ASPECT_RATIO;
-    self.leftIndicatorActiveWidth = DEFAULT_LEFT_INDICATOR_ACTIVE_ASPECT_RATIO;
-    self.leftIndicatorRightPadding = DEFAULT_LEFT_TEXT_PADDING;
-    _currentLeftIndicatorAspectRatio = self.leftIndicatorInactiveWidth;
+    self.leftIndicatorRelativeWidth = DEFAULT_LEFT_INDICATOR_RELATIVE_WIDTH;
+    self.leftIndicatorRelativeRightPadding = DEFAULT_LEFT_INDICATOR_RIGHT_PADDING;
     _textValidationBlock = ^BOOL(NSString *text) { return YES; };
 
     self.leftIndicatorInvalidColor = DEFAULT_INVALID_COLOR;
@@ -88,18 +77,9 @@ alpha:1.0]
     self.textField.text = @" ";
     [self addSubview:self.textField];
 
-    self.leftIndicator = [UIButton buttonWithType:UIButtonTypeCustom];
-    self.leftIndicator.titleLabel.textColor = [UIColor whiteColor];
-    [self.leftIndicator addTarget:self
-                           action:@selector(leftIndicatorTouchDown)
-                 forControlEvents:UIControlEventTouchDown];
-    [self.leftIndicator addTarget:self
-                           action:@selector(leftIndicatorTouchUp)
-                 forControlEvents:UIControlEventTouchUpInside | UIControlEventTouchUpOutside];
+    self.leftIndicator = [[UIView alloc] init];
     [self addSubview:self.leftIndicator];
-    [self updateLeftIndicatorState:BZGLeftIndicatorStateInactive
-                    formFieldState:BZGFormFieldStateNone
-                          animated:NO];
+    [self updateLeftIndicator:BZGFormFieldStateNone];
     self.textField.text = @"";
 
     self.alertView = [[UIAlertView alloc] initWithTitle:@""
@@ -117,71 +97,35 @@ alpha:1.0]
 
 #pragma mark - Drawing
 
-- (void)updateLeftIndicatorState:(BZGLeftIndicatorState)leftIndicatorState
-                  formFieldState:(BZGFormFieldState)formFieldState
-                        animated:(BOOL)animated
+- (void)updateLeftIndicator:(BZGFormFieldState)formFieldState
 {
-    BOOL shouldAnimate = (_currentLeftIndicatorState && !leftIndicatorState) || animated;
-    _currentLeftIndicatorState = leftIndicatorState;
     _currentFormFieldState = formFieldState;
-    switch (leftIndicatorState) {
-        case BZGLeftIndicatorStateInactive:
-            self.leftIndicator.userInteractionEnabled = NO;
-            [self updateLeftIndicatorAspectRatio:self.leftIndicatorInactiveWidth animated:shouldAnimate];
-            break;
-        case BZGLeftIndicatorStateActive:
-        default:
-            self.leftIndicator.userInteractionEnabled = YES;
-            [self updateLeftIndicatorAspectRatio:self.leftIndicatorActiveWidth animated:shouldAnimate];
-            break;
-    }
     switch (formFieldState) {
         case BZGFormFieldStateNone:
             self.leftIndicator.backgroundColor = self.leftIndicatorNoneColor;
-            [self.leftIndicator setTitle:@"" forState:UIControlStateNormal];
             break;
         case BZGFormFieldStateInvalid:
             self.leftIndicator.backgroundColor = self.leftIndicatorInvalidColor;
-            [self.leftIndicator setTitle:(leftIndicatorState) ? @"!" : @""
-                                forState:UIControlStateNormal];
             break;
         case BZGFormFieldStateValid:
         default:
             self.leftIndicator.backgroundColor = self.leftIndicatorValidColor;
-            [self.leftIndicator setTitle:@"" forState:UIControlStateNormal];
             break;
-    }
-}
-
-- (void)updateLeftIndicatorAspectRatio:(CGFloat)aspectRatio animated:(BOOL)animated
-{
-    _currentLeftIndicatorAspectRatio = aspectRatio;
-    void (^animations)() = ^{
-        self.leftIndicator.frame = CGRectMake(self.bounds.origin.x,
-                                              self.bounds.origin.y,
-                                              self.bounds.size.height*_currentLeftIndicatorAspectRatio,
-                                              self.bounds.size.height);
-
-        CGFloat textFieldX = self.bounds.size.height*(_currentLeftIndicatorAspectRatio+self.leftIndicatorRightPadding);
-        self.textField.frame = CGRectMake(self.bounds.origin.x + textFieldX,
-                                          self.bounds.origin.y,
-                                          self.bounds.size.width - textFieldX,
-                                          self.bounds.size.height);
-
-    };
-    if (animated) {
-        [UIView animateWithDuration:0.3 delay:0 options:UIViewAnimationOptionLayoutSubviews animations:animations completion:nil];
-    } else {
-        animations();
     }
 }
 
 - (void)layoutSubviews
 {
     [super layoutSubviews];
-    [self updateLeftIndicatorAspectRatio:_currentLeftIndicatorAspectRatio animated:NO];
-    self.leftIndicator.titleLabel.font = [UIFont systemFontOfSize:
-                                          self.textField.font.pointSize*1.5];
+    CGFloat fieldHeight = self.bounds.size.height;
+    self.leftIndicator.frame = CGRectMake(self.bounds.origin.x,
+                                          self.bounds.origin.y,
+                                          self.leftIndicatorRelativeWidth*fieldHeight,
+                                          self.bounds.size.height);
+    CGRect textFieldFrame = self.leftIndicator.frame;
+    textFieldFrame.origin.x += self.leftIndicator.frame.size.width + self.leftIndicatorRelativeRightPadding*fieldHeight;
+    textFieldFrame.size.width = self.bounds.size.width - textFieldFrame.origin.x;
+    self.textField.frame = textFieldFrame;
 }
 
 #pragma mark - UITextFieldDelegate
@@ -214,11 +158,11 @@ alpha:1.0]
 - (void)textFieldDidEndEditing:(UITextField *)textField
 {
     if (textField.text.length == 0) {
-        [self updateLeftIndicatorState:BZGLeftIndicatorStateInactive formFieldState:BZGFormFieldStateNone animated:NO];
+        [self updateLeftIndicator:BZGFormFieldStateNone];
     } else if (_textValidationBlock(textField.text)) {
-        [self updateLeftIndicatorState:BZGLeftIndicatorStateInactive formFieldState:BZGFormFieldStateValid animated:NO];
+        [self updateLeftIndicator:BZGFormFieldStateValid];
     } else {
-        [self updateLeftIndicatorState:BZGLeftIndicatorStateActive formFieldState:BZGFormFieldStateInvalid animated:YES];
+        [self updateLeftIndicator:BZGFormFieldStateInvalid];
     }
 
     if ([self.delegate respondsToSelector:@selector(textFieldDidEndEditing:)]) {
@@ -233,10 +177,11 @@ replacementString:(NSString *)string
     NSString *newText = [textField.text stringByReplacingCharactersInRange:range withString:string];
 
     if (_textValidationBlock(newText)) {
-        [self updateLeftIndicatorState:BZGLeftIndicatorStateInactive formFieldState:BZGFormFieldStateValid animated:NO];
+        [self updateLeftIndicator:BZGFormFieldStateValid];
     } else {
-        [self updateLeftIndicatorState:BZGLeftIndicatorStateInactive formFieldState:BZGFormFieldStateInvalid animated:NO];
+        [self updateLeftIndicator:BZGFormFieldStateInvalid];
     }
+
     if ([self.delegate respondsToSelector:@selector(textField:shouldChangeCharactersInRange:replacementString:)]) {
         return [self.delegate textField:textField
           shouldChangeCharactersInRange:range
@@ -248,7 +193,7 @@ replacementString:(NSString *)string
 
 - (BOOL)textFieldShouldClear:(UITextField *)textField
 {
-    [self updateLeftIndicatorState:BZGLeftIndicatorStateInactive formFieldState:BZGFormFieldStateNone animated:NO];
+    [self updateLeftIndicator:BZGFormFieldStateNone];
 
     if ([self.delegate respondsToSelector:@selector(textFieldShouldClear:)]) {
         return [self.delegate textFieldShouldClear:textField];
@@ -272,7 +217,7 @@ replacementString:(NSString *)string
 {
     UITextField *textField = (UITextField *)notification.object;
     if ([textField isEqual:self.textField] && !textField.text.length) {
-        [self updateLeftIndicatorState:BZGLeftIndicatorStateInactive formFieldState:BZGFormFieldStateNone animated:NO];
+        [self updateLeftIndicator:BZGFormFieldStateNone];
     }
 }
 
