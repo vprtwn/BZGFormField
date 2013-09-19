@@ -13,6 +13,7 @@
 		EB1887BD17E5404A00DFE6CE /* RootViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = EB1887B617E5404A00DFE6CE /* RootViewController.m */; };
 		EB1887BE17E5404A00DFE6CE /* RootViewController.xib in Resources */ = {isa = PBXBuildFile; fileRef = EB1887B717E5404A00DFE6CE /* RootViewController.xib */; };
 		EB701C4A17E54223006BD1B2 /* BZGFormField.m in Sources */ = {isa = PBXBuildFile; fileRef = EBEF6BF217E4197900FD9D4D /* BZGFormField.m */; };
+		EB705F5017EB79CB00EDA334 /* BZGTooltip.m in Sources */ = {isa = PBXBuildFile; fileRef = EB705F4F17EB79CB00EDA334 /* BZGTooltip.m */; };
 		EBEF6BBA17E40BFC00FD9D4D /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = EBEF6BB917E40BFC00FD9D4D /* Foundation.framework */; };
 		EBEF6BBC17E40BFC00FD9D4D /* CoreGraphics.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = EBEF6BBB17E40BFC00FD9D4D /* CoreGraphics.framework */; };
 		EBEF6BBE17E40BFC00FD9D4D /* UIKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = EBEF6BBD17E40BFC00FD9D4D /* UIKit.framework */; };
@@ -42,6 +43,8 @@
 		EB1887B517E5404A00DFE6CE /* RootViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RootViewController.h; sourceTree = "<group>"; };
 		EB1887B617E5404A00DFE6CE /* RootViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RootViewController.m; sourceTree = "<group>"; };
 		EB1887B717E5404A00DFE6CE /* RootViewController.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = RootViewController.xib; sourceTree = "<group>"; };
+		EB705F4E17EB79CB00EDA334 /* BZGTooltip.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = BZGTooltip.h; sourceTree = "<group>"; };
+		EB705F4F17EB79CB00EDA334 /* BZGTooltip.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = BZGTooltip.m; sourceTree = "<group>"; };
 		EBEF6BB617E40BFC00FD9D4D /* Example.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Example.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		EBEF6BB917E40BFC00FD9D4D /* Foundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Foundation.framework; path = System/Library/Frameworks/Foundation.framework; sourceTree = SDKROOT; };
 		EBEF6BBB17E40BFC00FD9D4D /* CoreGraphics.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreGraphics.framework; path = System/Library/Frameworks/CoreGraphics.framework; sourceTree = SDKROOT; };
@@ -50,7 +53,7 @@
 		EBEF6BD817E40BFC00FD9D4D /* XCTest.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = XCTest.framework; path = Library/Frameworks/XCTest.framework; sourceTree = DEVELOPER_DIR; };
 		EBEF6BE017E40BFC00FD9D4D /* BZGFormFieldTests-Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = "BZGFormFieldTests-Info.plist"; sourceTree = "<group>"; };
 		EBEF6BE417E40BFC00FD9D4D /* BZGFormFieldTests.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = BZGFormFieldTests.m; sourceTree = "<group>"; };
-		EBEF6BF117E4197900FD9D4D /* BZGFormField.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = BZGFormField.h; sourceTree = "<group>"; };
+		EBEF6BF117E4197900FD9D4D /* BZGFormField.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; lineEnding = 0; path = BZGFormField.h; sourceTree = "<group>"; xcLanguageSpecificationIdentifier = xcode.lang.objcpp; };
 		EBEF6BF217E4197900FD9D4D /* BZGFormField.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = BZGFormField.m; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
@@ -83,6 +86,8 @@
 			children = (
 				EBEF6BF117E4197900FD9D4D /* BZGFormField.h */,
 				EBEF6BF217E4197900FD9D4D /* BZGFormField.m */,
+				EB705F4E17EB79CB00EDA334 /* BZGTooltip.h */,
+				EB705F4F17EB79CB00EDA334 /* BZGTooltip.m */,
 			);
 			name = BZGFormField;
 			path = ../BZGFormField;
@@ -244,6 +249,7 @@
 				EB1887B817E5404A00DFE6CE /* AppDelegate.m in Sources */,
 				EB1887BC17E5404A00DFE6CE /* main.m in Sources */,
 				EB1887BD17E5404A00DFE6CE /* RootViewController.m in Sources */,
+				EB705F5017EB79CB00EDA334 /* BZGTooltip.m in Sources */,
 				EB701C4A17E54223006BD1B2 /* BZGFormField.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;

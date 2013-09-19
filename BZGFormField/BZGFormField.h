@@ -8,11 +8,6 @@
 
 #import <UIKit/UIKit.h>
 
-typedef NS_ENUM(NSInteger, BZGLeftIndicatorState) {
-    BZGLeftIndicatorStateInactive,
-    BZGLeftIndicatorStateActive
-};
-
 typedef NS_ENUM(NSInteger, BZGFormFieldState) {
     BZGFormFieldStateInvalid,
     BZGFormFieldStateValid,
@@ -27,33 +22,35 @@ typedef BOOL (^BZGTextValidationBlock)(NSString *text);
 
 @property (weak, nonatomic) id <BZGFormFieldDelegate> delegate;
 @property (strong, nonatomic) UITextField *textField;
-@property (strong, nonatomic) UIView *leftIndicator;
-@property (strong, nonatomic) UIAlertView *alertView;
+@property (strong, nonatomic) UIView *validityIndicator;
+@property (strong, nonatomic) UIView *infoBackdrop;
+@property (strong, nonatomic) UIButton *infoButton;
+@property (strong, nonatomic) UIView *infoTooltip;
 
 /**
  The width of the left indicator, relative to the height of the form field.
  */
-@property (assign, nonatomic) CGFloat leftIndicatorRelativeWidth;
+@property (assign, nonatomic) CGFloat validityIndicatorRelativeWidth;
 
 /**
  The padding between the left indicator and the text field, relative to the height of the form field.
  */
-@property (assign, nonatomic) CGFloat leftIndicatorRelativeRightPadding;
+@property (assign, nonatomic) CGFloat textFieldRelativePadding;
 
 /**
  The color of the left indicator when the form is invalid.
  */
-@property (strong, nonatomic) UIColor *leftIndicatorInvalidColor;
+@property (strong, nonatomic) UIColor *validityIndicatorInvalidColor;
 
 /**
  The color of the left indicator when the form is valid.
  */
-@property (strong, nonatomic) UIColor *leftIndicatorValidColor;
+@property (strong, nonatomic) UIColor *validityIndicatorValidColor;
 
 /**
  The color of the left indicator when the form is neither invalid nor valid.
  */
-@property (strong, nonatomic) UIColor *leftIndicatorNoneColor;
+@property (strong, nonatomic) UIColor *validityIndicatorNoneColor;
 
 /**
  Returns the current state of the form (invalid | valid | none)
@@ -61,14 +58,14 @@ typedef BOOL (^BZGTextValidationBlock)(NSString *text);
 - (BZGFormFieldState)formFieldState;
 
 /**
- Returns the current state of the left indicator (inactive | active)
- */
-- (BZGLeftIndicatorState)leftIndicatorState;
-
-/**
  Sets the validation block for the text field.
   */
 - (void)setTextValidationBlock:(BZGTextValidationBlock)block;
+
+/**
+ Hides the info tooltip.
+ */
+- (void)hideInfoTooltip;
 
 @end
 

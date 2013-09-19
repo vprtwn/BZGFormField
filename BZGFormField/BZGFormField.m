@@ -33,7 +33,6 @@ alpha:1.0]
     return _currentFormFieldState;
 }
 
-
 - (void)setTextValidationBlock:(BZGTextValidationBlock)block
 {
     _textValidationBlock = block;
@@ -61,33 +60,47 @@ alpha:1.0]
 
 - (void)setup
 {
-    self.leftIndicatorRelativeWidth = DEFAULT_LEFT_INDICATOR_RELATIVE_WIDTH;
-    self.leftIndicatorRelativeRightPadding = DEFAULT_LEFT_INDICATOR_RIGHT_PADDING;
+    self.clipsToBounds = NO;
+    self.validityIndicatorRelativeWidth = DEFAULT_LEFT_INDICATOR_RELATIVE_WIDTH;
+    self.textFieldRelativePadding = DEFAULT_LEFT_INDICATOR_RIGHT_PADDING;
     _textValidationBlock = ^BOOL(NSString *text) { return YES; };
 
-    self.leftIndicatorInvalidColor = DEFAULT_INVALID_COLOR;
-    self.leftIndicatorValidColor = DEFAULT_VALID_COLOR;
-    self.leftIndicatorNoneColor = DEFAULT_NONE_COLOR;
+    self.validityIndicatorInvalidColor = DEFAULT_INVALID_COLOR;
+    self.validityIndicatorValidColor = DEFAULT_VALID_COLOR;
+    self.validityIndicatorNoneColor = DEFAULT_NONE_COLOR;
 
     self.textField = [[UITextField alloc] init];
     self.textField.borderStyle = UITextBorderStyleNone;
     self.textField.delegate = self;
     self.textField.autocorrectionType = UITextAutocorrectionTypeNo;
     self.textField.autocapitalizationType = UITextAutocapitalizationTypeNone;
+    self.textField.clearButtonMode = UITextFieldViewModeNever;
     self.textField.text = @" ";
     [self addSubview:self.textField];
 
-    self.leftIndicator = [[UIView alloc] init];
-    [self addSubview:self.leftIndicator];
-    [self updateLeftIndicator:BZGFormFieldStateNone];
-    self.textField.text = @"";
+    self.infoBackdrop = [[UIView alloc] init];
+    self.infoBackdrop.backgroundColor = [UIColor clearColor];
+    self.infoBackdrop.clipsToBounds = YES;
+    self.infoButton = [UIButton buttonWithType:UIButtonTypeInfoLight];
+    self.infoButton.tintColor = DEFAULT_NONE_COLOR;
+    self.infoButton.userInteractionEnabled = YES;
+    [self.infoButton addTarget:self action:@selector(infoButtonAction) forControlEvents:UIControlEventTouchUpInside];
+    self.infoBackdrop.hidden = NO;
+    [self.infoBackdrop addSubview:self.infoButton];
+    [self addSubview:self.infoBackdrop];
 
-    self.alertView = [[UIAlertView alloc] initWithTitle:@""
-                                                message:@""
-                                               delegate:self
-                                      cancelButtonTitle:@"Ok"
-                                      otherButtonTitles:nil];
-    self.alertView.delegate = self;
+    self.infoTooltip = [[UIView alloc] init];
+    self.infoTooltip.backgroundColor = DEFAULT_NONE_COLOR;
+    self.infoTooltip.hidden = YES;
+    UIGestureRecognizer *tapGR = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(infoTooltipTapAction)];
+    [self.infoTooltip addGestureRecognizer:tapGR];
+    [self addSubview:self.infoTooltip];
+
+    self.validityIndicator = [[UIView alloc] init];
+    [self addSubview:self.validityIndicator];
+    [self updateValidityIndicator:BZGFormFieldStateNone];
+
+    self.textField.text = @"";
 
     [[NSNotificationCenter defaultCenter] addObserver:self
                                              selector:@selector(textFieldTextDidChange:)
@@ -95,21 +108,82 @@ alpha:1.0]
 
 }
 
+#pragma mark - Actions
+
+- (void)infoButtonAction
+{
+    if (self.infoTooltip.hidden) {
+        [self showInfoTooltip];
+    } else {
+        [self hideInfoTooltip];
+    }
+}
+
 #pragma mark - Drawing
 
-- (void)updateLeftIndicator:(BZGFormFieldState)formFieldState
+- (void)showInfoButton
+{
+    [UIView animateWithDuration:0.2 delay:0 options:UIViewAnimationOptionCurveEaseOut animations:^{
+        CGRect infoButtonFrame = self.infoBackdrop.frame;
+        infoButtonFrame.origin.x = 0;
+        self.infoButton.frame = infoButtonFrame;
+        CGRect textFieldFrame = self.textField.frame;
+        textFieldFrame.size.width = self.infoButton.frame.origin.x - textFieldFrame.origin.x;
+        self.textField.frame = textFieldFrame;
+    } completion:nil];
+}
+
+- (void)hideInfoButton
+{
+    [UIView animateWithDuration:0.2 delay:0 options:UIViewAnimationOptionCurveEaseOut animations:^{
+        CGRect infoButtonFrame = self.infoBackdrop.frame;
+        infoButtonFrame.origin.x = infoButtonFrame.size.width;
+        self.infoButton.frame = infoButtonFrame;
+        CGRect textFieldFrame = self.textField.frame;
+        textFieldFrame.size.width = self.infoButton.frame.origin.x - textFieldFrame.origin.x;
+        self.textField.frame = textFieldFrame;
+    } completion:nil];
+}
+
+- (void)infoTooltipTapAction
+{
+    if (self.infoTooltip.hidden) {
+        [self showInfoTooltip];
+    } else {
+        [self hideInfoTooltip];
+    }
+}
+
+- (void)showInfoTooltip
+{
+    [UIView animateWithDuration:0.2 delay:0 options:UIViewAnimationOptionCurveEaseOut animations:^{
+        self.infoTooltip.hidden = NO;
+        self.infoTooltip.alpha = 1.0;
+    } completion:nil];
+}
+
+- (void)hideInfoTooltip
+{
+    [UIView animateWithDuration:0.2 delay:0 options:UIViewAnimationOptionCurveEaseOut animations:^{
+        self.infoTooltip.alpha = 0.0;
+    } completion:^(BOOL finished) {
+        self.infoTooltip.hidden = YES;
+    }];
+}
+
+- (void)updateValidityIndicator:(BZGFormFieldState)formFieldState
 {
     _currentFormFieldState = formFieldState;
     switch (formFieldState) {
         case BZGFormFieldStateNone:
-            self.leftIndicator.backgroundColor = self.leftIndicatorNoneColor;
+            self.validityIndicator.backgroundColor = self.validityIndicatorNoneColor;
             break;
         case BZGFormFieldStateInvalid:
-            self.leftIndicator.backgroundColor = self.leftIndicatorInvalidColor;
+            self.validityIndicator.backgroundColor = self.validityIndicatorInvalidColor;
             break;
         case BZGFormFieldStateValid:
         default:
-            self.leftIndicator.backgroundColor = self.leftIndicatorValidColor;
+            self.validityIndicator.backgroundColor = self.validityIndicatorValidColor;
             break;
     }
 }
@@ -118,14 +192,28 @@ alpha:1.0]
 {
     [super layoutSubviews];
     CGFloat fieldHeight = self.bounds.size.height;
-    self.leftIndicator.frame = CGRectMake(self.bounds.origin.x,
+    self.validityIndicator.frame = CGRectMake(self.bounds.origin.x,
                                           self.bounds.origin.y,
-                                          self.leftIndicatorRelativeWidth*fieldHeight,
+                                          self.validityIndicatorRelativeWidth*fieldHeight,
                                           self.bounds.size.height);
-    CGRect textFieldFrame = self.leftIndicator.frame;
-    textFieldFrame.origin.x += self.leftIndicator.frame.size.width + self.leftIndicatorRelativeRightPadding*fieldHeight;
+
+    CGRect textFieldFrame = self.validityIndicator.frame;
+    textFieldFrame.origin.x += self.validityIndicator.frame.size.width + self.textFieldRelativePadding*fieldHeight;
     textFieldFrame.size.width = self.bounds.size.width - textFieldFrame.origin.x;
     self.textField.frame = textFieldFrame;
+
+    CGRect infoBackdropFrame = textFieldFrame;
+    infoBackdropFrame.origin.x = self.bounds.size.width - self.bounds.size.height;
+    infoBackdropFrame.size.width = self.bounds.size.height;
+    self.infoBackdrop.frame = infoBackdropFrame;
+
+    CGRect infoButtonFrame = infoBackdropFrame;
+    infoButtonFrame.origin.x = infoBackdropFrame.size.width;
+    self.infoButton.frame = infoButtonFrame;
+
+    CGRect infoTooltipFrame = self.bounds;
+    infoTooltipFrame.origin.y += self.bounds.size.height;
+    self.infoTooltip.frame = infoTooltipFrame;
 }
 
 #pragma mark - UITextFieldDelegate
@@ -141,6 +229,10 @@ alpha:1.0]
 
 - (void)textFieldDidBeginEditing:(UITextField *)textField
 {
+    if (textField != self.textField) return;
+
+    [self hideInfoButton];
+
     if ([self.delegate respondsToSelector:@selector(textFieldDidBeginEditing:)]) {
         [self.delegate textFieldDidBeginEditing:textField];
     }
@@ -157,12 +249,18 @@ alpha:1.0]
 
 - (void)textFieldDidEndEditing:(UITextField *)textField
 {
+    if (textField != self.textField) return;
+
     if (textField.text.length == 0) {
-        [self updateLeftIndicator:BZGFormFieldStateNone];
+        [self updateValidityIndicator:BZGFormFieldStateNone];
     } else if (_textValidationBlock(textField.text)) {
-        [self updateLeftIndicator:BZGFormFieldStateValid];
+        [self updateValidityIndicator:BZGFormFieldStateValid];
     } else {
-        [self updateLeftIndicator:BZGFormFieldStateInvalid];
+        [self updateValidityIndicator:BZGFormFieldStateInvalid];
+    }
+
+    if (_currentFormFieldState == BZGFormFieldStateInvalid) {
+        [self showInfoButton];
     }
 
     if ([self.delegate respondsToSelector:@selector(textFieldDidEndEditing:)]) {
@@ -177,9 +275,9 @@ replacementString:(NSString *)string
     NSString *newText = [textField.text stringByReplacingCharactersInRange:range withString:string];
 
     if (_textValidationBlock(newText)) {
-        [self updateLeftIndicator:BZGFormFieldStateValid];
+        [self updateValidityIndicator:BZGFormFieldStateValid];
     } else {
-        [self updateLeftIndicator:BZGFormFieldStateInvalid];
+        [self updateValidityIndicator:BZGFormFieldStateInvalid];
     }
 
     if ([self.delegate respondsToSelector:@selector(textField:shouldChangeCharactersInRange:replacementString:)]) {
@@ -193,7 +291,7 @@ replacementString:(NSString *)string
 
 - (BOOL)textFieldShouldClear:(UITextField *)textField
 {
-    [self updateLeftIndicator:BZGFormFieldStateNone];
+    [self updateValidityIndicator:BZGFormFieldStateNone];
 
     if ([self.delegate respondsToSelector:@selector(textFieldShouldClear:)]) {
         return [self.delegate textFieldShouldClear:textField];
@@ -204,6 +302,10 @@ replacementString:(NSString *)string
 
 - (BOOL)textFieldShouldReturn:(UITextField *)textField
 {
+    if (_currentFormFieldState == BZGFormFieldStateInvalid) {
+        [self showInfoButton];
+    }
+
     if ([self.delegate respondsToSelector:@selector(textFieldShouldReturn:)]) {
         return [self.delegate textFieldShouldReturn:textField];
     } else {
@@ -217,35 +319,8 @@ replacementString:(NSString *)string
 {
     UITextField *textField = (UITextField *)notification.object;
     if ([textField isEqual:self.textField] && !textField.text.length) {
-        [self updateLeftIndicator:BZGFormFieldStateNone];
+        [self updateValidityIndicator:BZGFormFieldStateNone];
     }
-}
-
-#pragma mark - UIAlertViewDelegate
-
-- (void)alertView:(UIAlertView *)alertView willDismissWithButtonIndex:(NSInteger)buttonIndex
-{
-    [self.textField becomeFirstResponder];
-
-    if ([self.delegate respondsToSelector:@selector(alertView:willDismissWithButtonIndex:)]) {
-        [self.delegate alertView:alertView willDismissWithButtonIndex:buttonIndex];
-    }
-}
-
-#pragma mark - Actions
-
-- (void)leftIndicatorTouchDown
-{
-    UIColor *color = [self.leftIndicator.backgroundColor colorWithAlphaComponent:0.8];
-    self.leftIndicator.backgroundColor = color;
-}
-
-- (void)leftIndicatorTouchUp
-{
-    UIColor *color = [self.leftIndicator.backgroundColor colorWithAlphaComponent:1.0];
-    self.leftIndicator.backgroundColor = color;
-
-    [self.alertView show];
 }
 
 
