@@ -7,6 +7,7 @@
 //
 
 #import "BZGFormField.h"
+#import "BZGTooltip.h"
 
 #define UIColorFromRGB(rgbValue) \
 [UIColor colorWithRed:((float)((rgbValue & 0xFF0000) >> 16))/255.0 \
@@ -84,17 +85,13 @@ alpha:1.0]
     self.infoButton = [UIButton buttonWithType:UIButtonTypeInfoLight];
     self.infoButton.tintColor = DEFAULT_NONE_COLOR;
     self.infoButton.userInteractionEnabled = YES;
+    self.infoButton.hidden = YES;
     [self.infoButton addTarget:self action:@selector(infoButtonAction) forControlEvents:UIControlEventTouchUpInside];
     self.infoBackdrop.hidden = NO;
     [self.infoBackdrop addSubview:self.infoButton];
     [self addSubview:self.infoBackdrop];
 
-    self.infoTooltip = [[UIView alloc] init];
-    self.infoTooltip.backgroundColor = DEFAULT_NONE_COLOR;
-    self.infoTooltip.hidden = YES;
-    UIGestureRecognizer *tapGR = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(infoTooltipTapAction)];
-    [self.infoTooltip addGestureRecognizer:tapGR];
-    [self addSubview:self.infoTooltip];
+    self.infoTooltip = [BZGTooltip sharedTooltip];
 
     self.validityIndicator = [[UIView alloc] init];
     [self addSubview:self.validityIndicator];
@@ -112,24 +109,28 @@ alpha:1.0]
 
 - (void)infoButtonAction
 {
-    if (self.infoTooltip.hidden) {
-        [self showInfoTooltip];
-    } else {
-        [self hideInfoTooltip];
-    }
+    [self showOrHideInfoTooltip];
 }
 
 #pragma mark - Drawing
 
+- (void)showOrHideInfoTooltip
+{
+    if (self.infoTooltip.hidden) {
+        [self.infoTooltip setTargetRect:self.infoButton.frame inView:self];
+        [self.infoTooltip setTooltipVisible:YES animated:YES];
+    } else {
+        [self.infoTooltip setTooltipVisible:NO animated:YES];
+    }
+}
+
 - (void)showInfoButton
 {
     [UIView animateWithDuration:0.2 delay:0 options:UIViewAnimationOptionCurveEaseOut animations:^{
+        self.infoButton.hidden = NO;
         CGRect infoButtonFrame = self.infoBackdrop.frame;
         infoButtonFrame.origin.x = 0;
         self.infoButton.frame = infoButtonFrame;
-        CGRect textFieldFrame = self.textField.frame;
-        textFieldFrame.size.width = self.infoButton.frame.origin.x - textFieldFrame.origin.x;
-        self.textField.frame = textFieldFrame;
     } completion:nil];
 }
 
@@ -139,35 +140,8 @@ alpha:1.0]
         CGRect infoButtonFrame = self.infoBackdrop.frame;
         infoButtonFrame.origin.x = infoButtonFrame.size.width;
         self.infoButton.frame = infoButtonFrame;
-        CGRect textFieldFrame = self.textField.frame;
-        textFieldFrame.size.width = self.infoButton.frame.origin.x - textFieldFrame.origin.x;
-        self.textField.frame = textFieldFrame;
-    } completion:nil];
-}
-
-- (void)infoTooltipTapAction
-{
-    if (self.infoTooltip.hidden) {
-        [self showInfoTooltip];
-    } else {
-        [self hideInfoTooltip];
-    }
-}
-
-- (void)showInfoTooltip
-{
-    [UIView animateWithDuration:0.2 delay:0 options:UIViewAnimationOptionCurveEaseOut animations:^{
-        self.infoTooltip.hidden = NO;
-        self.infoTooltip.alpha = 1.0;
-    } completion:nil];
-}
-
-- (void)hideInfoTooltip
-{
-    [UIView animateWithDuration:0.2 delay:0 options:UIViewAnimationOptionCurveEaseOut animations:^{
-        self.infoTooltip.alpha = 0.0;
     } completion:^(BOOL finished) {
-        self.infoTooltip.hidden = YES;
+        self.infoButton.hidden = YES;
     }];
 }
 
@@ -210,10 +184,6 @@ alpha:1.0]
     CGRect infoButtonFrame = infoBackdropFrame;
     infoButtonFrame.origin.x = infoBackdropFrame.size.width;
     self.infoButton.frame = infoButtonFrame;
-
-    CGRect infoTooltipFrame = self.bounds;
-    infoTooltipFrame.origin.y += self.bounds.size.height;
-    self.infoTooltip.frame = infoTooltipFrame;
 }
 
 #pragma mark - UITextFieldDelegate

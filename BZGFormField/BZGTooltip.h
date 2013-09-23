@@ -1,13 +1,18 @@
 //
-//  BZGFormFieldTooltip.h
-//  Example
+// BZGTooltip.h
 //
-//  Created by Ben Guo on 9/19/13.
-//  Copyright (c) 2013 BZG. All rights reserved.
+// Copyright (c) 2013 Ben Guo
 //
+// https://github.com/benzguo/BZGFormField
+//
+
 
 #import <UIKit/UIKit.h>
 
-@interface BZGFormFieldTooltip : UIView
+@interface BZGTooltip : UIView
+
++ (BZGTooltip *)sharedTooltip;
+- (void)setTargetRect:(CGRect)targetRect inView:(UIView *)targetView;
+- (void)setTooltipVisible:(BOOL)tooltipVisible animated:(BOOL)animated;
 
 @end

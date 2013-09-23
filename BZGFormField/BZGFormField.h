@@ -15,6 +15,7 @@ typedef NS_ENUM(NSInteger, BZGFormFieldState) {
 };
 
 @protocol BZGFormFieldDelegate;
+@class BZGTooltip;
 
 typedef BOOL (^BZGTextValidationBlock)(NSString *text);
 
@@ -25,7 +26,7 @@ typedef BOOL (^BZGTextValidationBlock)(NSString *text);
 @property (strong, nonatomic) UIView *validityIndicator;
 @property (strong, nonatomic) UIView *infoBackdrop;
 @property (strong, nonatomic) UIButton *infoButton;
-@property (strong, nonatomic) UIView *infoTooltip;
+@property (strong, nonatomic) BZGTooltip *infoTooltip;
 
 /**
  The width of the left indicator, relative to the height of the form field.
@@ -61,11 +62,6 @@ typedef BOOL (^BZGTextValidationBlock)(NSString *text);
  Sets the validation block for the text field.
   */
 - (void)setTextValidationBlock:(BZGTextValidationBlock)block;
-
-/**
- Hides the info tooltip.
- */
-- (void)hideInfoTooltip;
 
 @end
 
