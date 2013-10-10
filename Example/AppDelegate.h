@@ -1,8 +1,6 @@
 //
 // AppDelegate.h
 //
-// Copyright (c) 2013 Ben Guo
-//
 // https://github.com/benzguo/BZGFormField
 //
 
