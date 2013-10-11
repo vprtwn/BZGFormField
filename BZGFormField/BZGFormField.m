@@ -113,6 +113,10 @@ alpha:1.0]
 
 }
 
+- (void) dealloc {
+    [[NSNotificationCenter defaultCenter] removeObserver:self];
+}
+
 #pragma mark - Drawing
 
 - (void)updateLeftIndicatorState:(BZGLeftIndicatorState)leftIndicatorState
