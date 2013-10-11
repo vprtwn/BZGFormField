@@ -42,7 +42,3 @@ __weak RootViewController *weakSelf = self;
 
 * See sample Xcode project in `/Example`
 
-## Roadmap
-
-* make a Podspec
-* add more configurable things
