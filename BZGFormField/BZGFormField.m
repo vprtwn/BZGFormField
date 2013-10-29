@@ -78,6 +78,8 @@ alpha:1.0]
     self.leftIndicatorValidColor = DEFAULT_VALID_COLOR;
     self.leftIndicatorNoneColor = DEFAULT_NONE_COLOR;
 
+    self.validatesWhenEmpty = NO;
+
     self.textField = [[UITextField alloc] init];
     self.textField.borderStyle = UITextBorderStyleNone;
     self.textField.delegate = self;
@@ -215,7 +217,7 @@ alpha:1.0]
 
 - (void)textFieldDidEndEditing:(UITextField *)textField
 {
-    if (textField.text.length == 0) {
+    if (textField.text.length == 0 && !self.validatesWhenEmpty) {
         [self updateLeftIndicatorState:BZGLeftIndicatorStateInactive formFieldState:BZGFormFieldStateNone animated:NO];
     } else if (_textValidationBlock(textField.text)) {
         [self updateLeftIndicatorState:BZGLeftIndicatorStateInactive formFieldState:BZGFormFieldStateValid animated:NO];
@@ -228,9 +230,7 @@ alpha:1.0]
     }
 }
 
-- (BOOL)textField:(UITextField *)textField
-shouldChangeCharactersInRange:(NSRange)range
-replacementString:(NSString *)string
+- (BOOL)textField:(UITextField *)textField shouldChangeCharactersInRange:(NSRange)range replacementString:(NSString *)string
 {
     NSString *newText = [textField.text stringByReplacingCharactersInRange:range withString:string];
 
@@ -273,8 +273,15 @@ replacementString:(NSString *)string
 - (void)textFieldTextDidChange:(NSNotification *)notification
 {
     UITextField *textField = (UITextField *)notification.object;
-    if ([textField isEqual:self.textField] && !textField.text.length) {
-        [self updateLeftIndicatorState:BZGLeftIndicatorStateInactive formFieldState:BZGFormFieldStateNone animated:NO];
+    if ([textField isEqual:self.textField]) {
+        // Secure text fields clear on begin editing on iOS6+.
+        // If it seems like the text field has been cleared,
+        // invoke the text change delegate method again to ensure proper validation.
+        if (textField.secureTextEntry && textField.text.length <= 1) {
+            [self.textField.delegate textField:self.textField
+                 shouldChangeCharactersInRange:NSMakeRange(0, textField.text.length)
+                             replacementString:textField.text];
+        }
     }
 }
 
