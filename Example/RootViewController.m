@@ -30,6 +30,32 @@
             return YES;
         }
     }];
+    
+    //Add online validation
+    [self.emailField setAsyncTextValidationBlock:^BOOL(NSString *text) {
+        NSError *error;
+        NSString *str = [NSString stringWithFormat:@"https://api.mailgun.net/v2/address/validate?address=%@&api_key=%@", [text stringByReplacingPercentEscapesUsingEncoding:NSUTF8StringEncoding], @"pubkey-5ogiflzbnjrljiky49qxsiozqef5jxp7"];
+        NSData *responseData = [NSData dataWithContentsOfURL:[NSURL URLWithString:str]];
+        
+        if (!responseData) {
+            weakSelf.emailField.alertView.title = @"Cannot validate";
+            return NO;
+        }
+        
+        id json = [NSJSONSerialization JSONObjectWithData:responseData options:0 error:&error];
+        if (!json || error) {
+            weakSelf.emailField.alertView.title = @"Cannot validate";
+            return NO;
+        }
+
+        BOOL isValid = [json[@"is_valid"] boolValue];
+        if (!isValid) {
+            weakSelf.emailField.alertView.title = @"Invalid email address (online)";
+        }
+                
+        return isValid;
+    }];
+    
     self.emailField.delegate = self;
 
     self.passwordField.textField.placeholder = @"Password";

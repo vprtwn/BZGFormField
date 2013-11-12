@@ -61,6 +61,11 @@ typedef BOOL (^BZGTextValidationBlock)(NSString *text);
  */
 - (void)setTextValidationBlock:(BZGTextValidationBlock)block;
 
+/**
+ * Sets the asynchronous validation block for the text field.
+ */
+- (void)setAsyncTextValidationBlock:(BZGTextValidationBlock)block;
+
 @end
 
 /**
