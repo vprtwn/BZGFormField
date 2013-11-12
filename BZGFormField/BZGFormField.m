@@ -54,6 +54,15 @@ static NSString * const kValidationAnimationKey = @"validationAnimationKey";
     _asyncTextValidationBlock = block;
 }
 
+- (void)setText:(NSString *)text validate:(BOOL)validate
+{
+    self.textField.text = text;
+
+    if (validate) {
+        [self.textField.delegate textFieldDidEndEditing:self.textField];
+    }
+}
+
 - (id)initWithFrame:(CGRect)frame
 {
     self = [super initWithFrame:frame];

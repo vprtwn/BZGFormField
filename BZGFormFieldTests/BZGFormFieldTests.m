@@ -124,6 +124,34 @@
     XCTAssertTrue([self.formField.leftIndicator.backgroundColor isEqual:self.formField.leftIndicatorValidColor]);
 }
 
+- (void)testImmidiateValidation
+{
+    [self.formField setTextValidationBlock:^BOOL(NSString *text) {
+        return (text.length >= 4);
+    }];
+    
+    // 1 char; text set directly without immidiate validation
+    [self.formField setText:@"a" validate:NO];
+    XCTAssertTrue(self.formField.leftIndicatorState == BZGLeftIndicatorStateInactive);
+    XCTAssertTrue(self.formField.leftIndicator.frame.size.width/self.formField.frame.size.height == self.formField.leftIndicatorInactiveWidth);
+    XCTAssertTrue(self.formField.formFieldState == BZGFormFieldStateNone);
+    XCTAssertTrue([self.formField.leftIndicator.backgroundColor isEqual:self.formField.leftIndicatorNoneColor]);
+    
+    // 1 char; text set directly with immidiate validation
+    [self.formField setText:@"a" validate:YES];
+    XCTAssertTrue(self.formField.leftIndicatorState == BZGLeftIndicatorStateActive);
+    XCTAssertTrue(self.formField.leftIndicator.frame.size.width/self.formField.frame.size.height == self.formField.leftIndicatorActiveWidth);
+    XCTAssertTrue(self.formField.formFieldState == BZGFormFieldStateInvalid);
+    XCTAssertTrue([self.formField.leftIndicator.backgroundColor isEqual:self.formField.leftIndicatorInvalidColor]);
+
+        // 4 char; text set directly with immidiate validation
+    [self.formField setText:@"aaaa" validate:YES];
+    XCTAssertTrue(self.formField.leftIndicatorState == BZGLeftIndicatorStateInactive);
+    XCTAssertTrue(self.formField.leftIndicator.frame.size.width/self.formField.frame.size.height == self.formField.leftIndicatorInactiveWidth);
+    XCTAssertTrue(self.formField.formFieldState == BZGFormFieldStateValid);
+    XCTAssertTrue([self.formField.leftIndicator.backgroundColor isEqual:self.formField.leftIndicatorValidColor]);
+}
+
 - (void)testAlertView
 {
     __weak BZGFormFieldTests *weakSelf = self;
