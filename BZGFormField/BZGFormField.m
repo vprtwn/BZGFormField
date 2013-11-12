@@ -20,12 +20,15 @@ alpha:1.0]
 #define DEFAULT_VALID_COLOR UIColorFromRGB(0x2ECC71)
 #define DEFAULT_INVALID_COLOR UIColorFromRGB(0xE74C3C)
 
+static NSString * const kValidationAnimationKey = @"validationAnimationKey";
+
 @implementation BZGFormField {
     CGFloat _currentLeftIndicatorAspectRatio;
     BZGLeftIndicatorState _currentLeftIndicatorState;
     BZGFormFieldState _currentFormFieldState;
 
     BZGTextValidationBlock _textValidationBlock;
+    BZGTextValidationBlock _asyncTextValidationBlock;
 }
 
 #pragma mark - Public
@@ -44,6 +47,11 @@ alpha:1.0]
 - (void)setTextValidationBlock:(BZGTextValidationBlock)block
 {
     _textValidationBlock = block;
+}
+
+- (void)setAsyncTextValidationBlock:(BZGTextValidationBlock)block
+{
+    _asyncTextValidationBlock = block;
 }
 
 - (id)initWithFrame:(CGRect)frame
@@ -113,9 +121,50 @@ alpha:1.0]
 
 }
 
-- (void) dealloc {
+- (void)dealloc
+{
     [[NSNotificationCenter defaultCenter] removeObserver:self];
 }
+
+- (CAAnimation *)validationInProgressAnimation
+{
+    CABasicAnimation *animation = [CABasicAnimation animationWithKeyPath:@"backgroundColor"];
+    animation.fromValue = (id)self.leftIndicatorValidColor.CGColor;
+    animation.toValue = (id)self.leftIndicatorNoneColor.CGColor;
+    animation.autoreverses = YES;
+    animation.repeatCount = HUGE_VALF;
+    animation.duration = 0.75f;
+    animation.timingFunction = [CAMediaTimingFunction functionWithName:kCAMediaTimingFunctionEaseInEaseOut];
+    
+    return animation;
+}
+
+- (void)asyncValidateWithText:(NSString *)text
+{
+    //skip async check if async block hasn't been set
+    if (!_asyncTextValidationBlock) {
+        [self updateLeftIndicatorState:BZGLeftIndicatorStateInactive formFieldState:BZGFormFieldStateValid animated:NO];
+        return;
+    }
+    
+    if (![self.leftIndicator.layer animationForKey:kValidationAnimationKey]) {
+        [self.leftIndicator.layer addAnimation:[self validationInProgressAnimation] forKey:kValidationAnimationKey];
+    }
+    
+    __weak typeof(self) weakSelf = self;
+    dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
+        BOOL isValid = _asyncTextValidationBlock(text);
+        dispatch_async(dispatch_get_main_queue(), ^{
+        [weakSelf.leftIndicator.layer removeAnimationForKey:kValidationAnimationKey];
+            if (isValid) {
+                [weakSelf updateLeftIndicatorState:BZGLeftIndicatorStateInactive formFieldState:BZGFormFieldStateValid animated:NO];
+            } else {
+                [weakSelf updateLeftIndicatorState:BZGLeftIndicatorStateActive formFieldState:BZGFormFieldStateInvalid animated:NO];
+            }
+        });
+    });
+}
+
 
 #pragma mark - Drawing
 
@@ -218,7 +267,7 @@ alpha:1.0]
     if (textField.text.length == 0) {
         [self updateLeftIndicatorState:BZGLeftIndicatorStateInactive formFieldState:BZGFormFieldStateNone animated:NO];
     } else if (_textValidationBlock(textField.text)) {
-        [self updateLeftIndicatorState:BZGLeftIndicatorStateInactive formFieldState:BZGFormFieldStateValid animated:NO];
+        [self asyncValidateWithText:textField.text];
     } else {
         [self updateLeftIndicatorState:BZGLeftIndicatorStateActive formFieldState:BZGFormFieldStateInvalid animated:YES];
     }
@@ -235,7 +284,7 @@ replacementString:(NSString *)string
     NSString *newText = [textField.text stringByReplacingCharactersInRange:range withString:string];
 
     if (_textValidationBlock(newText)) {
-        [self updateLeftIndicatorState:BZGLeftIndicatorStateInactive formFieldState:BZGFormFieldStateValid animated:NO];
+        [self asyncValidateWithText:newText];
     } else {
         [self updateLeftIndicatorState:BZGLeftIndicatorStateInactive formFieldState:BZGFormFieldStateInvalid animated:NO];
     }
