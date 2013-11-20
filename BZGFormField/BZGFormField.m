@@ -26,7 +26,7 @@ static NSString * const kValidationAnimationKey = @"validationAnimationKey";
     CGFloat _currentLeftIndicatorAspectRatio;
     BZGLeftIndicatorState _currentLeftIndicatorState;
     BZGFormFieldState _currentFormFieldState;
-
+    
     BZGTextValidationBlock _textValidationBlock;
     BZGTextValidationBlock _asyncTextValidationBlock;
 }
@@ -81,6 +81,9 @@ static NSString * const kValidationAnimationKey = @"validationAnimationKey";
     return self;
 }
 
+
+
+
 #pragma mark - Setup
 
 - (void)setup
@@ -90,19 +93,20 @@ static NSString * const kValidationAnimationKey = @"validationAnimationKey";
     self.leftIndicatorRightPadding = DEFAULT_LEFT_TEXT_PADDING;
     _currentLeftIndicatorAspectRatio = self.leftIndicatorInactiveWidth;
     _textValidationBlock = ^BOOL(NSString *text) { return YES; };
-
+    
     self.leftIndicatorInvalidColor = DEFAULT_INVALID_COLOR;
     self.leftIndicatorValidColor = DEFAULT_VALID_COLOR;
     self.leftIndicatorNoneColor = DEFAULT_NONE_COLOR;
-
+    
     self.textField = [[UITextField alloc] init];
     self.textField.borderStyle = UITextBorderStyleNone;
+    [self.textField setTextColor:[UIColor colorWithRed:39.0/255.0 green:189.0/255.0 blue:188.0/255.0 alpha:1]];
     self.textField.delegate = self;
     self.textField.autocorrectionType = UITextAutocorrectionTypeNo;
     self.textField.autocapitalizationType = UITextAutocapitalizationTypeNone;
     self.textField.text = @" ";
     [self addSubview:self.textField];
-
+    
     self.leftIndicator = [UIButton buttonWithType:UIButtonTypeCustom];
     self.leftIndicator.titleLabel.textColor = [UIColor whiteColor];
     [self.leftIndicator addTarget:self
@@ -116,18 +120,18 @@ static NSString * const kValidationAnimationKey = @"validationAnimationKey";
                     formFieldState:BZGFormFieldStateNone
                           animated:NO];
     self.textField.text = @"";
-
+    
     self.alertView = [[UIAlertView alloc] initWithTitle:@""
                                                 message:@""
                                                delegate:self
                                       cancelButtonTitle:@"Ok"
                                       otherButtonTitles:nil];
     self.alertView.delegate = self;
-
+    
     [[NSNotificationCenter defaultCenter] addObserver:self
                                              selector:@selector(textFieldTextDidChange:)
                                                  name:UITextFieldTextDidChangeNotification object:nil];
-
+    
 }
 
 - (void)dealloc
@@ -162,9 +166,10 @@ static NSString * const kValidationAnimationKey = @"validationAnimationKey";
     
     __weak typeof(self) weakSelf = self;
     dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
-        BOOL isValid = _asyncTextValidationBlock(text);
+
         dispatch_async(dispatch_get_main_queue(), ^{
-        [weakSelf.leftIndicator.layer removeAnimationForKey:kValidationAnimationKey];
+                    BOOL isValid = _asyncTextValidationBlock(text);
+            [weakSelf.leftIndicator.layer removeAnimationForKey:kValidationAnimationKey];
             if (isValid) {
                 [weakSelf updateLeftIndicatorState:BZGLeftIndicatorStateInactive formFieldState:BZGFormFieldStateValid animated:NO];
             } else {
@@ -221,13 +226,13 @@ static NSString * const kValidationAnimationKey = @"validationAnimationKey";
                                               self.bounds.origin.y,
                                               self.bounds.size.height*_currentLeftIndicatorAspectRatio,
                                               self.bounds.size.height);
-
+        
         CGFloat textFieldX = self.bounds.size.height*(_currentLeftIndicatorAspectRatio+self.leftIndicatorRightPadding);
         self.textField.frame = CGRectMake(self.bounds.origin.x + textFieldX,
                                           self.bounds.origin.y,
                                           self.bounds.size.width - textFieldX,
                                           self.bounds.size.height);
-
+        
     };
     if (animated) {
         [UIView animateWithDuration:0.3 delay:0 options:UIViewAnimationOptionLayoutSubviews animations:animations completion:nil];
@@ -280,7 +285,7 @@ static NSString * const kValidationAnimationKey = @"validationAnimationKey";
     } else {
         [self updateLeftIndicatorState:BZGLeftIndicatorStateActive formFieldState:BZGFormFieldStateInvalid animated:YES];
     }
-
+    
     if ([self.delegate respondsToSelector:@selector(textFieldDidEndEditing:)]) {
         [self.delegate textFieldDidEndEditing:textField];
     }
@@ -291,7 +296,7 @@ shouldChangeCharactersInRange:(NSRange)range
 replacementString:(NSString *)string
 {
     NSString *newText = [textField.text stringByReplacingCharactersInRange:range withString:string];
-
+    
     if (_textValidationBlock(newText)) {
         [self asyncValidateWithText:newText];
     } else {
@@ -309,7 +314,7 @@ replacementString:(NSString *)string
 - (BOOL)textFieldShouldClear:(UITextField *)textField
 {
     [self updateLeftIndicatorState:BZGLeftIndicatorStateInactive formFieldState:BZGFormFieldStateNone animated:NO];
-
+    
     if ([self.delegate respondsToSelector:@selector(textFieldShouldClear:)]) {
         return [self.delegate textFieldShouldClear:textField];
     } else {
@@ -341,7 +346,7 @@ replacementString:(NSString *)string
 - (void)alertView:(UIAlertView *)alertView willDismissWithButtonIndex:(NSInteger)buttonIndex
 {
     [self.textField becomeFirstResponder];
-
+    
     if ([self.delegate respondsToSelector:@selector(alertView:willDismissWithButtonIndex:)]) {
         [self.delegate alertView:alertView willDismissWithButtonIndex:buttonIndex];
     }
@@ -359,7 +364,7 @@ replacementString:(NSString *)string
 {
     UIColor *color = [self.leftIndicator.backgroundColor colorWithAlphaComponent:1.0];
     self.leftIndicator.backgroundColor = color;
-
+    
     [self.alertView show];
 }
 
