@@ -47,6 +47,11 @@ typedef BOOL (^BZGTextValidationBlock)(NSString *text);
 @property (strong, nonatomic) UIColor *leftIndicatorNoneColor;
 
 /**
+ * Class util: Returns YES if all of the BZGForms contained in a View are in a valid state
+ */
++ (BOOL)areValidAllFormsContainedInView:(UIView *)containerView;
+
+/**
  * Returns the form's current validation state (invalid | valid | none)
  */
 - (BZGFormFieldState)formFieldState;
