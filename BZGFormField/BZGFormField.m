@@ -33,6 +33,27 @@ static NSString * const kValidationAnimationKey = @"validationAnimationKey";
 
 #pragma mark - Public
 
++ (BOOL)areValidAllFormsContainedInView:(UIView *)containerView
+{
+    BOOL allFormsAreValid = YES;
+    
+    for (UIView *aView in containerView.subviews)
+    {
+        if ([aView isKindOfClass:[BZGFormField class]])
+        {
+            if ([(BZGFormField *)aView formFieldState] == BZGFormFieldStateValid)
+                continue;
+            else
+            {
+                allFormsAreValid = NO;
+                break;
+            }
+        }
+    }
+    
+    return allFormsAreValid;
+}
+
 - (BZGLeftIndicatorState)leftIndicatorState
 {
     return _currentLeftIndicatorState;
