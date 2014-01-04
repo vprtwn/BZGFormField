@@ -100,6 +100,7 @@ static NSString * const kValidationAnimationKey = @"validationAnimationKey";
     self.textField.delegate = self;
     self.textField.autocorrectionType = UITextAutocorrectionTypeNo;
     self.textField.autocapitalizationType = UITextAutocapitalizationTypeNone;
+    self.textField.contentVerticalAlignment = UIControlContentVerticalAlignmentCenter;
     self.textField.text = @" ";
     [self addSubview:self.textField];
 
