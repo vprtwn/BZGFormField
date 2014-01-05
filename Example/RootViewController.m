@@ -73,7 +73,7 @@
     self.passwordConfirmField.textField.placeholder = @"Confirm Password";
     self.passwordConfirmField.textField.secureTextEntry = YES;
     [self.passwordConfirmField setTextValidationBlock:^BOOL(NSString *text) {
-        if (![text isEqualToString:self.passwordField.textField.text]) {
+        if (![text isEqualToString:weakSelf.passwordField.textField.text]) {
             weakSelf.passwordConfirmField.alertView.title = @"Password confirm doesn't match";
             return NO;
         } else {
