@@ -71,7 +71,7 @@
 
 - (void)testBasicTextValidation
 {
-    [self.formField setTextValidationBlock:^BOOL(NSString *text) {
+    [self.formField setTextValidationBlock:^BOOL(BZGFormField *field, NSString *text) {
         return (text.length >= 4);
     }];
 
@@ -126,7 +126,7 @@
 
 - (void)testImmediateValidation
 {
-    [self.formField setTextValidationBlock:^BOOL(NSString *text) {
+    [self.formField setTextValidationBlock:^BOOL(BZGFormField *field, NSString *text) {
         return (text.length >= 4);
     }];
     
@@ -154,13 +154,12 @@
 
 - (void)testAlertView
 {
-    __weak BZGFormFieldTests *weakSelf = self;
-    [self.formField setTextValidationBlock:^BOOL(NSString *text) {
+    [self.formField setTextValidationBlock:^BOOL(BZGFormField *field, NSString *text) {
         if ([text isEqualToString:@"foo"]) {
-            weakSelf.formField.alertView.title = @"text can't be foo";
+            field.alertView.title = @"text can't be foo";
             return NO;
         } else {
-            weakSelf.formField.alertView.title = @"";
+            field.alertView.title = @"";
             return YES;
         }
     }];
