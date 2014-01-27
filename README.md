@@ -7,7 +7,7 @@
 The left indicator changes color based on the validity of the field's text - just pass the field a text validation block:
 
 ```objective-c
-[self.passwordField setTextValidationBlock:^BOOL(NSString *text) {
+[self.passwordField setTextValidationBlock:^BOOL(BZGFormField *field, NSString *text) {
     return (text.length >= 8);
 }];
 ```
@@ -21,10 +21,9 @@ When the text field returns, the indicator expands and becomes tappable.
 When the indicator is tapped, an alert view is displayed - you can configure the alert view in the text validation block.
 
 ```objective-c
-__weak RootViewController *weakSelf = self;
-[self.passwordField setTextValidationBlock:^BOOL(NSString *text) {
+[self.passwordField setTextValidationBlock:^BOOL(BZGFormField *field, NSString *text) {
     if (text.length < 8) {
-        weakSelf.passwordField.alertView.title = @"Password is too short";
+        field.alertView.title = @"Password is too short";
         return NO;
     } else {
         return YES;

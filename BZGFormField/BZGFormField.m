@@ -89,7 +89,7 @@ static NSString * const kValidationAnimationKey = @"validationAnimationKey";
     self.leftIndicatorActiveWidth = DEFAULT_LEFT_INDICATOR_ACTIVE_ASPECT_RATIO;
     self.leftIndicatorRightPadding = DEFAULT_LEFT_TEXT_PADDING;
     _currentLeftIndicatorAspectRatio = self.leftIndicatorInactiveWidth;
-    _textValidationBlock = ^BOOL(NSString *text) { return YES; };
+    _textValidationBlock = ^BOOL(BZGFormField *field, NSString *text) { return YES; };
 
     self.leftIndicatorInvalidColor = DEFAULT_INVALID_COLOR;
     self.leftIndicatorValidColor = DEFAULT_VALID_COLOR;
@@ -163,7 +163,7 @@ static NSString * const kValidationAnimationKey = @"validationAnimationKey";
     
     __weak typeof(self) weakSelf = self;
     dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
-        BOOL isValid = _asyncTextValidationBlock(text);
+        BOOL isValid = _asyncTextValidationBlock(self, text);
         dispatch_async(dispatch_get_main_queue(), ^{
         [weakSelf.leftIndicator.layer removeAnimationForKey:kValidationAnimationKey];
             if (isValid) {
@@ -276,7 +276,7 @@ static NSString * const kValidationAnimationKey = @"validationAnimationKey";
 {
     if (textField.text.length == 0) {
         [self updateLeftIndicatorState:BZGLeftIndicatorStateInactive formFieldState:BZGFormFieldStateNone animated:NO];
-    } else if (_textValidationBlock(textField.text)) {
+    } else if (_textValidationBlock(self, textField.text)) {
         [self asyncValidateWithText:textField.text];
     } else {
         [self updateLeftIndicatorState:BZGLeftIndicatorStateActive formFieldState:BZGFormFieldStateInvalid animated:YES];
@@ -293,7 +293,7 @@ replacementString:(NSString *)string
 {
     NSString *newText = [textField.text stringByReplacingCharactersInRange:range withString:string];
 
-    if (_textValidationBlock(newText)) {
+    if (_textValidationBlock(self, newText)) {
         [self asyncValidateWithText:newText];
     } else {
         [self updateLeftIndicatorState:BZGLeftIndicatorStateInactive formFieldState:BZGFormFieldStateInvalid animated:NO];
