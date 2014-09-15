@@ -33,6 +33,24 @@ static NSString * const kValidationAnimationKey = @"validationAnimationKey";
 
 #pragma mark - Public
 
+- (void)setLeftIndicatorInactiveWidth:(CGFloat)leftIndicatorInactiveWidth
+{
+    _leftIndicatorInactiveWidth = leftIndicatorInactiveWidth;
+    if (_currentLeftIndicatorState == BZGLeftIndicatorStateInactive) {
+        _currentLeftIndicatorAspectRatio = leftIndicatorInactiveWidth;
+        [self setNeedsLayout];
+    }
+}
+
+- (void)setLeftIndicatorActiveWidth:(CGFloat)leftIndicatorActiveWidth
+{
+    _leftIndicatorActiveWidth = leftIndicatorActiveWidth;
+    if (_currentLeftIndicatorState == BZGLeftIndicatorStateActive) {
+        _currentLeftIndicatorAspectRatio = leftIndicatorActiveWidth;
+        [self setNeedsLayout];
+    }
+}
+
 - (BZGLeftIndicatorState)leftIndicatorState
 {
     return _currentLeftIndicatorState;
@@ -42,7 +60,6 @@ static NSString * const kValidationAnimationKey = @"validationAnimationKey";
 {
     return _currentFormFieldState;
 }
-
 
 - (void)setTextValidationBlock:(BZGTextValidationBlock)block
 {
